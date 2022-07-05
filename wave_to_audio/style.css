@@ -1,0 +1,15 @@
+
+body {
+    padding: 0;
+    margin: 0;
+}
+
+#canvasContainer{
+    display: flex;
+    justify-content: center;
+}
+
+#topInputs {
+    display: flex;
+    justify-content: center;
+}
