@@ -1,0 +1,57 @@
+html {
+    padding: 0;
+    margin: 0;
+    font-family: 'Signika';
+    color: rgb(30, 30, 40);
+}
+
+h1{
+    font-size: 36pt;
+    margin: 5px;
+}
+
+.center {
+    position: center;
+    width: 100%;
+    padding: 0px;
+    text-align: center;
+}
+
+.roundBorder{
+    border: solid;
+    border-color: rgb(20,20,30);
+    border-width: 2px;
+    border-radius: 12px;
+}
+
+.roundBorder:focus{
+    border-color: rgb(110, 110, 196);
+    outline: none;
+}
+
+.margin{
+    padding: 5px;
+    margin: 5px;
+    width: 95%;
+}
+
+.font
+{
+    font-family: 'Signika';
+    color: rgb(30, 30, 40);
+    font-size: 22pt;
+}
+
+input, textarea{
+    font-size: 18pt !important;
+}
+
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+       -khtml-user-select: none; /* Konqueror HTML */
+         -moz-user-select: none; /* Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome and Opera */
+  }

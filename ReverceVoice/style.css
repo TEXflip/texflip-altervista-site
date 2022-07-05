@@ -1,0 +1,58 @@
+html,body{
+	height: 99%;
+    width: 99%;
+	padding: 0px;
+	margin: 0px;
+	font-family: 'Permanent Marker', Arial;
+	color: rgb(25,15,25);
+}
+
+h1{
+	font-size: 36pt;
+	margin: 5pt;
+	font-weight: normal;
+}
+
+#defaultCanvas0{
+	position: fixed;
+	display: block;
+	top: 100%;
+	transform: translateY(-100%); 
+	z-index: -1;
+}
+
+input{
+	position: relative;
+	font-family: 'Permanent Marker', Arial;
+	font-size: 28pt;
+	border-radius: 200pt;
+	color: rgb(25,15,25);
+	flex-grow: 2;
+	outline: none;
+}
+
+input:active{
+	background-color: rgb(231, 142, 142); 
+}
+
+.absolute{
+	width: 100%;
+	top:150px;
+	text-align: center;
+	z-index: 10;
+}
+
+.flex{
+	position: absolute;
+	display: flex;
+	text-align: center;
+	top: 150px;
+	bottom: 0px;
+	width: 100%;
+	z-index: 10;
+}
+
+#separator{
+	min-width: 6vw;
+	flex-grow: 2;
+}

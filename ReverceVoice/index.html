@@ -1,0 +1,23 @@
+<meta charset="utf-8" />
+<html>
+
+<head>
+	<title>The Reverser</title>
+	<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<link href="https://fonts.googleapis.com/css?family=Permanent+Marker" rel="stylesheet">
+	<link rel="stylesheet" href="style.css" />
+	<script src="../Libraries/p5/p5.min.js"></script>
+	<script src="../Libraries/p5/p5.sound.min.js"></script>
+	<script src="script.js"></script>
+</head>
+
+<body>
+	<div class="absolute"><h1>The Reverser</h1></div>
+	<div class="flex">
+		<input onmousedown="keyPressed(1)" onmouseup="keyReleased(1)" onmouseleave="keyReleased(1)" type="button" id="normal" value="normal">
+		<div id="separator"></div>
+		<input onmousedown="keyPressed(2)" onmouseup="keyReleased(2)" onmouseleave="keyReleased(2)" type="button" id="reverse" value="return">
+	</div>
+</body>
+
+</html>

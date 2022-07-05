@@ -1,0 +1,60 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="style.css">
+    </head>
+    <body>
+        <script type="text/javascript" src="sketch.js"></script>
+        <script type="text/javascript" src="functions.js"></script>
+        <script id="vertex" type="vertex">
+            attribute vec2 a_position;
+            void main(){
+                gl_Position = vec4(a_position, 0, 1);
+            }
+        </script>
+        <script id="fragment" type="fragment">
+            precision highp float;
+            uniform vec2 resolution;
+            uniform vec2 Pos;
+            uniform vec2 mouse;
+            uniform float zoom;
+            uniform float Iter;
+            float JCol = 0.;
+            vec2 Mandelbrot(vec2 z,vec2 c);
+            vec3 Color(float z);
+            void main(){
+                //float m = 2.8*(1./pow(1.2,zoom));
+                vec2 uv = (gl_FragCoord.xy-resolution/2.)/min(resolution.x,resolution.y);
+                uv *= 2.8*(1./pow(1.2,zoom));
+                uv -= mouse/min(resolution.x,resolution.y);
+                
+                
+                const int maxIter = 2000;
+                vec3 color = vec3(1.,1.,1.);
+                vec2 z = vec2(0.);
+                for(int i = 0;i < maxIter; i++)
+                {
+                    uv = Mandelbrot(uv,(z - Pos.xy));
+                    //color = Color(z)*0.002;
+                    if(dot(uv,uv) > 4.){
+                        color = Color(float(i));//vec3(float(i)*0.002);
+                        break;
+                    }
+                    if(i >= int(Iter))
+                        break;
+                }
+                gl_FragColor = vec4(color, 1.);
+            }
+            vec2 Mandelbrot(vec2 z,vec2 c){
+                return vec2(z.x*z.x-z.y*z.y,z.x*z.y*2.) + c;
+            }
+            vec3 Color(float z){
+                JCol = z;//+= exp(sqrt(z.x*z.x + z.y*z.y));
+                return vec3(sin(JCol / 48.0),cos(JCol / 96.0),/*cos(JCol / 192.0 + 3.14 / 4.0)+*/0.6);
+            }
+        </script>
+        <input type="range" id="RangeX" value="0.75"  min="-1.5" max="1.5" step="0.00001">
+        <input type="range" id="RangeY" value="0.2" style="top: 25px;" min="-1.5" max="1.5" step="0.00001">
+        <input type="range" id="RangeZ" value="255" style="top: 50px;" min="1" max="2000" step="0.00001">
+        <input type="button" id="play" class="button" value="Play/Pause" style="top: 75px;">
+    </body>
+</html>

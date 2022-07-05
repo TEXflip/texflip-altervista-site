@@ -1,0 +1,10 @@
+{
+  "lockfileVersion": 1,
+  "dependencies": {
+    "matter-js": {
+      "version": "0.12.0",
+      "resolved": "https://registry.npmjs.org/matter-js/-/matter-js-0.12.0.tgz",
+      "integrity": "sha1-3LAtBDJsR3RsY6N3LRR1dT1y/h4="
+    }
+  }
+}

@@ -1,0 +1,82 @@
+﻿<!DOCTYPE html5>
+
+<head>
+	<title>Probabilitá Cattura Pokémon</title>
+	<meta charset="UTF-8" name="viewport"
+		content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<script language="javascript" type="text/javascript" src="pokemon.js"></script>
+	<script language="javascript" type="text/javascript" src="pokeball.js"></script>
+	<script language="javascript" type="text/javascript" src="capture.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script language="javascript" type="text/javascript" src="sketch.js"></script>
+
+
+</head>
+
+<body onload="setup()">
+	<div style="margin: 20px; text-align: center;">
+		<h1>Pokemon Search Probability</h1>
+	</div>
+	<div style="margin: 10px;">
+		<label>Ps: <b id="ps">100%</b></label>
+		<br>
+		<input id="range" list="marks" style="width: 100%;" type="range" min="1" max="100" value="100" step="1"
+			oninput="sliderChange(this)" />
+		<h2 class="stats">Probability:</h2>
+		<h1 class="stats" id="pr"></h1>
+		<h2 class="stats">Maximum Attempts:</h2>
+		<h1 class="stats" id="tn"></h1>
+	</div>
+	<div id="container">
+		<div id="leftThing" style="text-align: center;">
+			<div>
+				<label for="volume">Status Pokémon:</label>
+				<select id="stati">
+					<option value="none" style="background-color: white">Nessuno</option>
+					<option value="freeze" style="background-color: #7edfff">Congelamento</option>
+					<option value="sleep" style="background-color: #bcbcab">Sonno</option>
+					<option value="poison" style="background-color: #ac589b">Avvelenamento</option>
+					<option value="paralysis" style="background-color: #ffce3e">Paralisi</option>
+					<option value="burn" style="background-color: #ff4726">Scottatura</option>
+				</select>
+			</div>
+			<div>
+				<label for="volume">Game Generation:</label>
+				<select id="generation">
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7" selected="selected">7</option>
+					<option value="8">8</option>
+				</select>
+			</div>
+		</div>
+
+		<div id="content">
+			Selected Pokemon: <b><label id="pokemonInput">Bulbasaur</label></b>
+			<input type="text" autocomplete="off" id="searchPokemon" onkeyup="searchPokemon(this.value)"
+				placeholder="Search Pokemon to catch...">
+			<ul id="pokemonList">
+			</ul>
+		</div>
+
+		<div id="rightThing">
+			<div id="multiplicator" style="margin-bottom: 5pt;">
+				<label style="margin-right: 5pt;">Multiplicator:</label>
+				<input type="number" id="pokeballInput" style="width: 25%;" value="1.0" step="0.5" min="-20" max="8">
+				<input class="pesoball" style="margin-left: 5pt;" id="pesoball" type="checkbox">
+				<label class="pesoball" >Peso Ball</label>
+			</div>
+			<input id="searchPokeball" type="text" style="margin-top: 3pt; width: 90%;" placeholder="Search Pokeball..."
+				onkeyup="searchPokeball(this.value)">
+			<ul id="pokeballList">
+
+			</ul>
+		</div>
+	</div>
+</body>

@@ -1,0 +1,54 @@
+@font-face{
+	font-family: "Roboto Slab";
+    src: url("RobotoSlab/RobotoSlab-Regular.ttf");
+    font-weight: 400;
+}
+@font-face{
+	font-family: "Roboto Slab";
+    src: url("RobotoSlab/RobotoSlab-Bold.ttf");
+    font-weight: 700;
+}
+@font-face{
+	font-family: "Roboto Slab";
+    src: url("RobotoSlab/RobotoSlab-Light.ttf");
+    font-weight: 300;
+}
+@font-face{
+	font-family: "Roboto Slab";
+    src: url("RobotoSlab/RobotoSlab-Thin.ttf");
+    font-weight: 100;
+}
+html{
+	background: linear-gradient( rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3) ), url('viola.jpg');
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    height: 100%;
+}
+body{
+	color: #fdfdfd;
+    font-family: 'Roboto Slab', serif;
+    text-align: center;
+    font-weight: 100;
+}
+h1{
+    font-size: 29pt;
+}
+#mainTitle{
+	font-size: 20pt
+}
+
+#mainLabel{
+
+}
+
+.place{
+	font-weight: 400;
+}
+
+#distance{
+	font-weight: bold;
+}
+
+#unit{
+	font-weight: 400;
+}

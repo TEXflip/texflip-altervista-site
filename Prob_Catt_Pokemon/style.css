@@ -1,0 +1,212 @@
+.thead {
+    border-style: solid;
+    border-width: 5px;
+    padding: 5px;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    font-size: medium;
+    background-color: #ffffff;
+    margin: 0px;
+    color: #262327;
+}
+
+.noselect {
+    -webkit-touch-callout: none;
+    /* iOS Safari */
+    -webkit-user-select: none;
+    /* Safari */
+    -khtml-user-select: none;
+    /* Konqueror HTML */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge */
+    user-select: none;
+    /* Non-prefixed version, currently
+                                    supported by Chrome and Opera */
+}
+
+tr {
+    text-align: center;
+}
+
+table {
+    border-style: solid;
+    background-size: 100%;
+    box-sizing: border-box;
+    background-image: linear-gradient(to right, #D0E6FF, #7CBAFF);
+    padding: 0.5ex;
+    border-radius: 1rem;
+    direction: ltr;
+    line-height: 1.6;
+    border-width: 0px;
+}
+
+tbody {
+    background-color: #ffffff;
+}
+
+#stati {
+    margin: 3px;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.stats {
+    position: relative;
+}
+
+#container {
+    height: 150pt;
+    width: 100%;
+    display: flex;
+}
+
+#leftThing {
+    width: 25%;
+    /* background-color: blue; */
+    text-align: center;
+}
+
+#content {
+    width: 40%;
+    /* background-color: green; */
+    text-align: center;
+}
+
+#rightThing {
+    width: 35%;
+    /* background-color: yellow; */
+    text-align: center;
+}
+
+input[type="text"], input[type="number"] {
+    border: 1px solid #ccc;
+    border-radius: 1rem;
+    padding: 6pt;
+    font-size: 16px;
+}
+
+select {
+    border: 1px solid #ccc;
+    border-radius: 1rem;
+    padding: 3pt;
+    font-size: 16px;
+}
+
+#searchPokemon {
+    background-image: url('./icons/search.svg');
+    background-position: 10px 10px;
+    background-repeat: no-repeat;
+    background-size: 20px;
+    width: 100%;
+    padding: 12px 20px 12px 40px;
+}
+
+#pokemonList {
+    list-style-type: none;
+    padding: 0;
+    background-image: linear-gradient(to right, #D0E6FF, #7CBAFF);
+    padding: 0.5ex;
+    border-radius: 1rem;
+    direction: ltr;
+    line-height: 1.6;
+    border-width: 0px;
+}
+
+#pokemonList li {
+    border-radius: 1rem;
+    margin: 3px;
+    background-color: #f6f6f6;
+    text-decoration: none;
+    font-size: 18px;
+    color: black;
+    display: block;
+}
+
+#pokemonList li img {
+    vertical-align: middle;
+}
+
+.name {
+    text-align: left;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 20% 30% 30% 20%;
+    grid-template-rows: auto;
+    /* flex-direction: row; */
+    align-items: center;
+    /* justify-content: space-between; */
+}
+
+#pokemonList li:hover {
+    background-color: #ffffff50;
+}
+
+#pokeballList {
+    list-style-type: none;
+    padding: 0;
+    background-image: linear-gradient(to right, #D0E6FF, #7CBAFF);
+    padding: 0.5ex;
+    border-radius: 1rem;
+    direction: ltr;
+    line-height: 1.6;
+    border-width: 0px;
+}
+
+#pokeballList li {
+    border-radius: 1rem;
+    margin: 3px;
+    background-color: #f6f6f6;
+    text-decoration: none;
+    font-size: 18px;
+    color: black;
+    display: block;
+}
+
+#pokeballList li:hover {
+    background-color: #ffffff50;
+}
+
+.rowBall {
+    display: grid;
+    grid-template-columns: 20% 50% 30%;
+    grid-template-rows: auto;
+    /* flex-direction: row; */
+    align-items: center;
+    /* justify-content: space-between; */
+}
+
+#range {
+    background: linear-gradient(to right, #16fd0c 0%, #16fd0c 100%, #fff 0%, #fff 100%);
+    border: solid 1px #bdbdbd;
+    border-radius: 8px;
+    height: 12pt;
+    width: 356px;
+    outline: none;
+    transition: background 450ms ease-in;
+    -webkit-appearance: none;
+}
+
+#range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 50%;
+    width: 14pt;
+    height: 14pt;
+    background: #dddddd;
+    border: solid 1px #00000050;
+    cursor: pointer;
+}
+
+#range::-moz-range-thumb {
+    border-radius: 50%;
+    width: 14pt;
+    height: 14pt;
+    background: #dddddd;
+    border: solid 1px #00000050;
+    cursor: pointer;
+}

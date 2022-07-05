@@ -1,0 +1,79 @@
+
+
+@font-face {
+    font-family: "04B_30";
+    src: local("04B_30"), url(assets/04B_30.TTF) format("truetype");
+}
+body {
+    padding: 0;
+    margin: 0;
+    font-family: "04B_30";
+    background-color: #c8c8c8; 
+}
+.end {
+    padding: 0;
+    margin: 0;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    color: #222222;
+    font-family: "04B_30";
+    font-size: 25px;
+}
+
+#name {
+    border: 1px solid #848484;
+    -webkit-border-radius: 30px;
+    -moz-border-radius: 30px;
+    border-radius: 30px;
+    outline: 0;
+    height: 35px;
+    width: 325px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+#EndTitle{
+    font-size: 100px;
+    transform: translate(-50%, -50%);
+    width: 350px; 
+    height: 350px
+    text-align: center;
+}
+#retry{
+	left: 50%;
+	top: 50%;
+	font-size: 25px;
+	position: relative;
+	left: 280px;
+	top: -180px;
+}
+#pause{
+	visibility: hidden;
+	position: relative;
+	left: 68px;
+	top: -45px;
+}
+#Points{
+	transform: translate(-50%, -50%);
+	position: absolute;
+	left: 50%;
+	top: 20px;
+}
+
+input[type="button"] {
+	background-color:#222222;
+	-moz-border-radius:15px;
+	-webkit-border-radius:15px;
+	border-radius:15px;
+	display:inline-block;
+	color:#c8c8c8;
+	padding:16px 31px;
+    outline: 0;
+}
+input[type="button"]:hover {
+	background-color:#201e26;
+}
+input[type="button"]:active {
+	top:1px;
+}

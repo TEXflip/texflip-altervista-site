@@ -1,0 +1,26 @@
+<html>
+
+<head>
+	<title>The Replacer</title>
+	<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<link href="https://fonts.googleapis.com/css?family=Signika" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<script language="javascript" type="text/javascript" src="../Libraries/p5/p5.js"></script>
+	<script language="javascript" type="text/javascript" src="sketch.js"></script>
+</head>
+
+<body>
+	<div class="center">
+		<h1 class="noselect">The Replacer</h1>
+		<br>
+		<label class="font margin noselect" style="font-size: 10pt;"><b>Instructions:</b> "word2 = word1" to replace all word1 in word2 or "word2 =- word1" to replace inside the words</label>
+		<br>
+		<input class="font margin roundBorder" type="text" id="inputConstraint" value = "stra = male;" oninput="constraintChanged(this.value)">
+		<br>
+		<textarea class="font margin roundBorder" id="input" onfocusout="onfocusout(this)" onfocusin="onfocusin(this)" oninput="inputChanged(this.value)">meglio soli che male accompagnati</textarea>
+		<br>
+		<label class="font margin" id="outputText"></label>
+	</div>
+</body>
+
+</html>
