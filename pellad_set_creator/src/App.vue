@@ -57,7 +57,7 @@
         <div class="songs-picker">
             <!-- loop through each song -->
             <template v-for="song in songs" :key="song.id">
-                <label :for="song.name" class="fake-checkbox" @click="toggleSong(song)" :id="`${song.id}_label`">
+                <label :for="song.name" class="fake-checkbox noselect" @click="toggleSong(song)" :id="`${song.id}_label`">
                     {{song.name}}
                     <!-- add cover badge if the current song is a cover -->
                     <template v-if="song.isCover">
