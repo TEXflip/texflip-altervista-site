@@ -262,14 +262,18 @@ export default {
         },
         addSong: function() {
             // making sure inputs are okay
-            if(this.new_song_title !== '' && parseInt(this.new_song_duration_mins) && parseInt(this.new_song_duration_secs)) {
+            let min = parseInt(this.new_song_duration_mins);
+            let sec = parseInt(this.new_song_duration_secs);
+            if(this.new_song_title && isFinite(min) && isFinite(sec) && 
+                min >= 0 && min <= 60 && sec >= 0 && sec <= 60
+            ) {
                 // create new starting moment object
                 let songTime = moment(0, 'mm:ss')
                 // create duration object to be added to the starting object
                 // using the values inserted in the input textboxes
                 let duration = moment.duration({
-                    minutes: parseInt(this.new_song_duration_mins),
-                    seconds: parseInt(this.new_song_duration_secs)
+                    minutes: min,
+                    seconds: sec
                 })
     
                 // make new song object
@@ -294,8 +298,9 @@ export default {
             }
         },
         deleteSong: function() {
-            let song = document.getElementById('delete_song_dropdown').value
-            this.songs.splice(this.songs.indexOf(song), 1)
+            let songId = document.getElementById('delete_song_dropdown').value
+            let index = this.songs.map(item => item["id"]).indexOf(songId)
+            this.songs.splice(index, 1)
             this.storeSongs()
         },
         storeSongs: function() {
