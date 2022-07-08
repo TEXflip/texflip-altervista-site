@@ -1,0 +1,210 @@
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    background-color: rgb(13, 13, 13);
+    color: white;
+    margin: 0;
+}
+
+.logo {
+    max-height: 3rem;
+    margin-top: 1rem;
+}
+
+.main {
+    padding: 1rem;
+}
+
+.manage {
+    margin-bottom: 1rem;
+}
+
+.button {
+    display: flex;
+    flex: 1;
+    max-width: 210px;
+    min-width: 140px;
+    justify-content: center;
+    background-color: #00acec;
+    margin: 0 0.5rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: 10px;
+    border: 0px;
+    color: white;
+    font-size: 1rem;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.button:hover {
+    background-color: #0079ea;
+}
+
+.danger {
+    background-color: red;
+}
+
+.danger:hover {
+    background-color: rgb(209, 0, 0);
+}
+
+.collapse {
+    transform: translateY(0);
+    height: 0px;
+    opacity: 0;
+    transition: all 0.15s ease-in-out;
+    width: 100%;
+    border-radius: 12px;
+}
+
+.collapse.open {
+    transform: translateY(1em);
+    height: 180px;
+    opacity: 1;
+    margin-bottom: 1rem;
+}
+
+.collapse-content {
+    animation: fadeIn 0.2s both;
+    flex-direction: column;
+    display: none;
+}
+
+.add-song,
+.delete-song {
+    display: flex;
+    flex-direction: column;
+}
+
+.new-song {
+    width: 100%;
+    align-items: center;
+}
+
+.new-song>* {
+    width: 100%;
+    align-items: center;
+    display: flex;
+}
+
+.delete-song-content {
+    display: flex;
+    flex-direction: row;
+}
+
+.delete-song-button {
+    display: flex;
+    padding: 0.5rem;
+    align-items: center;
+}
+
+.input-textbox {
+    background-color: #2c2c2c;
+    border-width: 0px;
+    padding: 0.75rem;
+    border-radius: 8px;
+    color: white;
+    font-family: inherit;
+    font-size: 1rem;
+    display: flex;
+    flex-grow: 1;
+    margin: 0.5rem
+}
+
+.fake-checkbox {
+    display: flex;
+    align-items: center;
+    background-color: #5a5a5a;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    margin: 0.5rem;
+}
+
+.checked {
+    background-color: #8a8a8a;
+}
+
+.cover {
+    display: flex;
+    padding: 0.25rem;
+    border-radius: 5px;
+    color: #5a5a5a;
+    background-color: white;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-left: 0.25rem;
+}
+
+.fake-checkbox.checked .cover {
+    color: #8a8a8a
+}
+
+.songs-picker {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    max-width: 600px;
+    background-color: #424242;
+    padding: 0.5rem;
+    border-radius: 12px;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.setlist-area {
+    margin-top: 2rem;
+}
+
+.setlist {
+    padding: 1rem;
+    border-radius: 12px;
+    background-color: #8a8a8a;
+}
+
+.total-time {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.track {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #5a5a5a;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    width: 100%;
+    margin: 0.5rem 0;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .collapse.open {
+        height: 340px;
+    }
+    .new-song {
+        flex-direction: column;
+    }
+    .delete-song-content {
+        flex-direction: column;
+    }
+    .delete-song-button {
+        justify-content: center;
+    }
+}
