@@ -1,12 +1,12 @@
 /* CRISTIAN RICORDA LA PALETTE!!! */
+
 :root {
     /* black palette */
-	--nero-pellad: #0d0d0d;
+    --nero-pellad: #0d0d0d;
     --bg-1: #2c2c2c;
     --bg-2: #3f3d43;
     --bg-3: #5a5a5a;
     --bg-4: #7e7e7e;
-
     /* button colors */
     --danger: #ff0000;
     --danger-hover: #d10000;
@@ -14,7 +14,6 @@
     --normal-hover: #0079ea;
     --good: #14d624;
     --good-hover: #0e9319;
-
     /* font color */
     --font-col: #ffffff;
 }
@@ -194,6 +193,11 @@ body {
     margin-bottom: 1rem;
 }
 
+.draggable {
+    display: flex;
+    flex: 1;
+}
+
 .track {
     display: flex;
     flex-direction: row;
@@ -207,12 +211,18 @@ body {
 }
 
 .noselect {
-    -webkit-touch-callout: none; /* iOS Safari */
-      -webkit-user-select: none; /* Safari */
-       -khtml-user-select: none; /* Konqueror HTML */
-         -moz-user-select: none; /* Old versions of Firefox */
-          -ms-user-select: none; /* Internet Explorer/Edge */
-              user-select: none; /* Non-prefixed version, currently
+    -webkit-touch-callout: none;
+    /* iOS Safari */
+    -webkit-user-select: none;
+    /* Safari */
+    -khtml-user-select: none;
+    /* Konqueror HTML */
+    -moz-user-select: none;
+    /* Old versions of Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge */
+    user-select: none;
+    /* Non-prefixed version, currently
                                     supported by Chrome, Edge, Opera and Firefox */
 }
 

@@ -77,7 +77,7 @@
                     <!-- song row -->
                     <template v-for="(song, idx) in setlist" :key="idx">
                         <div class="row">
-                            <div class="track">
+                            <div class="track" draggable="true" :id="`${song.id}_track`">
                                 <div>{{idx + 1}}</div>
                                 <div style="display: flex; align-items: center">
                                     {{song.name}}
@@ -193,14 +193,30 @@ export default {
             const id = song.id
             const checkbox = document.getElementById(id)
             const label = document.getElementById(`${id}_label`)
+            // declare variable that's going to hold the actual
+            // html element of the song in the setlist
+            let track = null
 
             // add song to the setlist array and add "checked" class to its label
             if(!checkbox.checked) {
                 this.setlist.push(song)
                 label.classList.add('checked')
+                // the following code will be executed at the next page render,
+                // since the html element of the song in the setlist hasn't been
+                // rendered yet thus it's not present in the DOM
+                this.$nextTick(() => {
+                    // assign html element to the variable
+                    track = document.getElementById(`${id}_track`)
+                    // add drag & drop event listeners to the track element in the setlist
+                    this.addEventListeners(track)
+                })
             // remove song from the array and remove "checked" class from its label
             } else {
+                // assign html element to the variable
+                track = document.getElementById(`${id}_track`)
                 label.classList.remove('checked')
+                // remove drag & drop event listeners to the track element in the setlist
+                this.removeEventListeners(track)
                 this.setlist.splice(this.setlist.indexOf(song), 1)
             }
 
@@ -283,8 +299,6 @@ export default {
                     "duration": songTime.add(duration).format('mm:ss'),
                     "isCover": this.new_song_is_cover
                 }
-
-                console.log(newSong)
     
                 // add new song to the songs array
                 this.songs.push(newSong)
@@ -311,7 +325,16 @@ export default {
             this.new_song_duration_mins = null
             this.new_song_duration_secs = null
             this.new_song_is_cover = false
-        }
+        },
+        addEventListeners: function(track) {
+            track.addEventListener('dragstart', this.dragStart())
+        },
+        dragStart: function() {
+            console.log('yep')
+        },
+        removeEventListeners: function(track) {
+            track.removeEventListener('drag', this.dragStart())
+        },
     }
 }
 </script>
