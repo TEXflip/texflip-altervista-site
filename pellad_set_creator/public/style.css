@@ -1,11 +1,32 @@
+/* CRISTIAN RICORDA LA PALETTE!!! */
+:root {
+    /* black palette */
+	--nero-pellad: #0d0d0d;
+    --bg-1: #2c2c2c;
+    --bg-2: #424242;
+    --bg-3: #5a5a5a;
+    --bg-4: #8a8a8a;
+
+    /* button colors */
+    --danger: #ff0000;
+    --danger-hover: #d10000;
+    --normal: #00acec;
+    --normal-hover: #0079ea;
+    --good: #14d624;
+    --good-hover: #0e9319;
+
+    /* font color */
+    --font-col: #ffffff;
+}
+
 body {
     display: flex;
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
     font-family: 'Inter', sans-serif;
-    background-color: rgb(13, 13, 13);
-    color: white;
+    background-color: var(--nero-pellad);
+    color: var(--font-col);
     margin: 0;
 }
 
@@ -28,26 +49,26 @@ body {
     max-width: 210px;
     min-width: 140px;
     justify-content: center;
-    background-color: #00acec;
+    background-color: var(--normal);
     margin: 0 0.5rem;
     padding: 0.5rem 1.25rem;
     border-radius: 10px;
     border: 0px;
-    color: white;
+    color: var(--font-col);
     font-size: 1rem;
     transition: background-color 0.2s ease-in-out;
 }
 
 .button:hover {
-    background-color: #0079ea;
+    background-color: var(--normal-hover);
 }
 
 .danger {
-    background-color: red;
+    background-color: var(--danger);
 }
 
 .danger:hover {
-    background-color: rgb(209, 0, 0);
+    background-color: var(--danger-hover);
 }
 
 .collapse {
@@ -101,11 +122,11 @@ body {
 }
 
 .input-textbox {
-    background-color: #2c2c2c;
+    background-color: var(--bg-1);
     border-width: 0px;
     padding: 0.75rem;
     border-radius: 8px;
-    color: white;
+    color: var(--font-col);
     font-family: inherit;
     font-size: 1rem;
     display: flex;
@@ -116,29 +137,29 @@ body {
 .fake-checkbox {
     display: flex;
     align-items: center;
-    background-color: #5a5a5a;
+    background-color: var(--bg-3);
     padding: 0.5rem 1rem;
     border-radius: 8px;
     margin: 0.5rem;
 }
 
 .checked {
-    background-color: #8a8a8a;
+    background-color: var(--bg-4);
 }
 
 .cover {
     display: flex;
     padding: 0.25rem;
     border-radius: 5px;
-    color: #5a5a5a;
-    background-color: white;
+    color: var(--bg-3);
+    background-color: var(--font-col);
     font-size: 0.8rem;
     font-weight: 700;
     margin-left: 0.25rem;
 }
 
 .fake-checkbox.checked .cover {
-    color: #8a8a8a
+    color: var(--bg-4)
 }
 
 .songs-picker {
@@ -146,7 +167,7 @@ body {
     flex-direction: row;
     flex-wrap: wrap;
     max-width: 600px;
-    background-color: #424242;
+    background-color: var(--bg-2);
     padding: 0.5rem;
     border-radius: 12px;
 }
@@ -164,7 +185,7 @@ body {
 .setlist {
     padding: 1rem;
     border-radius: 12px;
-    background-color: #8a8a8a;
+    background-color: var(--bg-4);
 }
 
 .total-time {
@@ -178,7 +199,7 @@ body {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    background-color: #5a5a5a;
+    background-color: var(--bg-3);
     padding: 0.5rem 1rem;
     border-radius: 10px;
     width: 100%;
