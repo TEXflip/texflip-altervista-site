@@ -178,7 +178,8 @@ export default {
             if(this.setlist.length > 0) {
                 // creating a moment object with time 00:00
                 // the actual duration time will be added later
-                this.totalTime = moment(0, 'mm:ss')
+                // this.totalTime = moment(0, 'mm:ss')
+                let tot_time_in_sec = 0
 
                 // sum duration of each song to the base moment object
                 this.setlist.forEach(song => {
@@ -188,12 +189,14 @@ export default {
                     let seconds = parseInt(split_time[1])
 
                     // add current song duration to the base moment object
-                    let tmp_time = moment.duration({ minutes: minutes, seconds: seconds })
-                    this.totalTime.add(tmp_time)
+                    // let tmp_time = moment.duration({ minutes: minutes, seconds: seconds })
+                    // this.totalTime.add(tmp_time)
+                    tot_time_in_sec += minutes * 60 + seconds
                 })
 
                 // assign the new total time to the reactive property
-                this.totalTime = this.totalTime.format('mm:ss')
+                // this.totalTime = this.totalTime.format('mm:ss')
+                this.totalTime = this.format_seconds(tot_time_in_sec)
             
             } else {
                 this.totalTime = null
