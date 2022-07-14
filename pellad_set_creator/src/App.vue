@@ -103,8 +103,6 @@
 </template>
 
 <script>
-import moment from 'moment'
-
 export default {
     data() {
         return {
@@ -118,11 +116,10 @@ export default {
         }
     },
     mounted() {
-        // check if the songs object is already stored in session
-        if(localStorage.getItem('songs')) {
-            // populate songs list from the object retrieved from session
-            this.songs = JSON.parse(localStorage.getItem('songs'))
-        } else {
+        this.loadSongs();
+    },
+    methods: {
+        loadSongs: function(){
             // HTTP GET the songs
             this.axios.get("https://texflip.altervista.org/pellad_set_creator/songGET.php")
                     .then(res => {
@@ -132,12 +129,8 @@ export default {
                             song["isCover"] = parseInt(song["isCover"]) ? true : false;
                             this.songs.push(song);
                         }
-                        // store songs in session
-                        this.storeSongs(this.songs)
                     })
-        }
-    },
-    methods: {
+        },
         toggleSong: function(song) {
             const id = song.id
             const checkbox = document.getElementById(id)
@@ -235,23 +228,6 @@ export default {
             if(this.new_song_title && isFinite(min) && isFinite(sec) && 
                 min >= 0 && min <= 60 && sec >= 0 && sec <= 60
             ) {
-                // create new starting moment object
-                let songTime = moment(0, 'mm:ss')
-                // create duration object to be added to the starting object
-                // using the values inserted in the input textboxes
-                let duration = moment.duration({
-                    minutes: min,
-                    seconds: sec
-                })
-    
-                // make new song object
-                let newSong = {
-                    "id": this.new_song_title.replace(/\s/g, "").toLowerCase(),
-                    "name": this.new_song_title,
-                    "duration": songTime.add(duration).format('mm:ss'),
-                    "isCover": this.new_song_is_cover
-                }
-
                 this.axios.post("https://texflip.altervista.org/pellad_set_creator/songPOST.php", {
                     type: "add",
                     name: this.new_song_title,
@@ -259,9 +235,7 @@ export default {
                     isCover: this.new_song_is_cover ? 1 : 0
                 }).then(res => {
                     console.log(res)
-                    // add new song to the songs array
-                    this.songs.push(newSong)
-                    this.storeSongs(this.songs)
+                    this.loadSongs();
                     // clear inputs
                     this.clearNewSongInputs()
                 })
@@ -280,12 +254,8 @@ export default {
                     name: name,
                 }).then(res => {
                     console.log(res)
-                    this.songs.splice(index, 1)
-                    this.storeSongs(this.songs)
+                    this.loadSongs();
                 })
-        },
-        storeSongs: function(songs) {
-            localStorage.setItem('songs', JSON.stringify(songs))
         },
         clearNewSongInputs: function() {
             this.new_song_title = null
