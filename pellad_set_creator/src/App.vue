@@ -246,7 +246,7 @@ export default {
         },
         deleteSong: function() {
             let songId = document.getElementById('delete_song_dropdown').value
-            let index = this.songs.map(item => item["id"]).indexOf(songId)
+            let index = this.getSongIndexById(songId)
             let name = this.songs[index]["name"];
 
             this.axios.post("https://texflip.altervista.org/pellad_set_creator/songPOST.php", {
@@ -264,10 +264,30 @@ export default {
             this.new_song_is_cover = false
         },
         addEventListeners: function(track) {
-            track.addEventListener('dragstart', this.dragStart())
+            track.addEventListener('dragstart', this.dragStart)
+            track.addEventListener('dragover', (e) => {
+                let bb = e.target.getBoundingClientRect();
+                let center = (bb.top + bb.bottom)/2.;
+                console.log(center-e.y); // relative position to element center
+                e.preventDefault()
+            })
+            track.addEventListener('drop', (e)  => {
+
+                console.log(e.target.id)
+            })
         },
         dragStart: function() {
             console.log('yep')
+        },
+        swapSongs: function(id_s1, id_s2) {
+            let index1 = this.setlist.map(item => item["id"]).indexOf(id_s1);
+            let index2 = this.setlist.map(item => item["id"]).indexOf(id_s2);
+            let temp = this.setlist[index1];
+            this.setlist[index1] = this.setlist[index2];
+            this.setlist[index2] = temp;
+        },
+        getSongIndexById: function(id){
+            return this.songs.map(item => item["id"]).indexOf(id)
         },
         removeEventListeners: function(track) {
             track.removeEventListener('drag', this.dragStart())
