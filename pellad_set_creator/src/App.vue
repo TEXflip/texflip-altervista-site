@@ -108,68 +108,7 @@ import moment from 'moment'
 export default {
     data() {
         return {
-            songs: [
-                {
-                    "id": "cookies",
-                    "name": "Cookies In The Dark",
-                    "duration": "06:11", 
-                    "isCover": false
-                },
-                {
-                    "id": "wintersun",
-                    "name": "Winter Sun",
-                    "duration": "05:56", 
-                    "isCover": false 
-                },
-                {
-                    "id": "sam",
-                    "name": "Sam",
-                    "duration": "04:58",
-                    "isCover": false 
-                },
-                {
-                    "id": "akita",
-                    "name": "Akita",
-                    "duration": "05:29",
-                    "isCover": false 
-                },
-                {
-                    "id": "deadendblues",
-                    "name": "Dead End Blues",
-                    "duration": "05:16", 
-                    "isCover": false 
-                },
-                {
-                    "id": "unknow",
-                    "name": "Unknow",
-                    "duration": "04:58", 
-                    "isCover": false 
-                },
-                {
-                    "id": "lighthouse",
-                    "name": "Lighthouse",
-                    "duration": "06:01", 
-                    "isCover": false 
-                },
-                {
-                    "id": "trimmer",
-                    "name": "Trimmer",
-                    "duration": "03:38", 
-                    "isCover": false
-                },
-                {
-                    "id": "therestime",
-                    "name": "There's Time",
-                    "duration": "04:36", 
-                    "isCover": false 
-                },
-                {
-                    "id": "thepot",
-                    "name": "The Pot",
-                    "duration": "06:21",
-                    "isCover": true
-                }
-            ],
+            songs: [],
             setlist: [],
             totalTime: null,
             new_song_title: null,
@@ -184,8 +123,18 @@ export default {
             // populate songs list from the object retrieved from session
             this.songs = JSON.parse(localStorage.getItem('songs'))
         } else {
-            // store songs in session
-            this.storeSongs()
+            // HTTP GET the songs
+            this.axios.get("https://texflip.altervista.org/pellad_set_creator/songGET.php")
+                    .then(res => {
+                        this.songs = []
+                        for (let song of res.data) {
+                            song["duration"] = this.format_seconds(song["duration"])
+                            song["isCover"] = parseInt(song["isCover"]) ? true : false;
+                            this.songs.push(song);
+                        }
+                        // store songs in session
+                        this.storeSongs(this.songs)
+                    })
         }
     },
     methods: {
@@ -299,13 +248,20 @@ export default {
                     "duration": songTime.add(duration).format('mm:ss'),
                     "isCover": this.new_song_is_cover
                 }
-    
-                // add new song to the songs array
-                this.songs.push(newSong)
-                this.storeSongs()
-                // clear inputs
-                this.clearNewSongInputs()
-                
+
+                this.axios.post("https://texflip.altervista.org/pellad_set_creator/songPOST.php", {
+                    type: "add",
+                    name: this.new_song_title,
+                    duration: min * 60 + sec,
+                    isCover: this.new_song_is_cover ? 1 : 0
+                }).then(res => {
+                    console.log(res)
+                    // add new song to the songs array
+                    this.songs.push(newSong)
+                    this.storeSongs(this.songs)
+                    // clear inputs
+                    this.clearNewSongInputs()
+                })
             } else {
                 alert('nope! try again')
                 this.clearNewSongInputs()
@@ -314,11 +270,19 @@ export default {
         deleteSong: function() {
             let songId = document.getElementById('delete_song_dropdown').value
             let index = this.songs.map(item => item["id"]).indexOf(songId)
-            this.songs.splice(index, 1)
-            this.storeSongs()
+            let name = this.songs[index]["name"];
+
+            this.axios.post("https://texflip.altervista.org/pellad_set_creator/songPOST.php", {
+                    type: "del",
+                    name: name,
+                }).then(res => {
+                    console.log(res)
+                    this.songs.splice(index, 1)
+                    this.storeSongs(this.songs)
+                })
         },
-        storeSongs: function() {
-            localStorage.setItem('songs', JSON.stringify(this.songs))
+        storeSongs: function(songs) {
+            localStorage.setItem('songs', JSON.stringify(songs))
         },
         clearNewSongInputs: function() {
             this.new_song_title = null
@@ -335,6 +299,25 @@ export default {
         removeEventListeners: function(track) {
             track.removeEventListener('drag', this.dragStart())
         },
+        format_seconds: function(time) {
+            time = parseInt(time);
+            let time_str = "";
+            let hours = Math.floor(time / 3600);
+            if (hours > 0){
+                hours = hours > 9 ? String(hours) : "0" + hours;
+                time = time - hours * 3600;
+                time_str = hours + ":";
+            }
+            let min = Math.floor(time / 60);
+            let sec = time - min * 60;
+
+            min = min > 9 ? String(min) : "0" + min;
+            sec = sec > 9 ? String(sec) : "0" + sec;
+            
+            time_str += min + ":" + sec;
+
+            return time_str;
+        }
     }
 }
 </script>
