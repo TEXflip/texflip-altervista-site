@@ -78,15 +78,15 @@
                     <template v-for="(song, idx) in setlist" :key="idx">
                         <div class="row" :id="`${song.id}_drop`" :data-index="`${idx}`">
                             <div class="track" draggable="true" :id="`${song.id}_track`" :data-index="`${idx}`">
-                                <div>{{idx + 1}}</div>
-                                <div style="display: flex; align-items: center">
+                                <div style="pointer-events: none">{{idx + 1}}</div>
+                                <div style="display: flex; align-items: center, pointer-events: none">
                                     {{song.name}}
                                     <!-- add cover badge if the current song is a cover -->
                                     <template v-if="song.isCover">
                                         <span class="cover">cover</span>
                                     </template>
                                 </div>
-                                <div>{{song.duration}}</div>
+                                <div style="pointer-events: none">{{song.duration}}</div>
                             </div>
                         </div>
                     </template>
@@ -273,15 +273,38 @@ export default {
             this.new_song_is_cover = false
         },
         addDragEventListeners: function(track) {
-            track.addEventListener('dragstart', (e) => {
-                this.dragging_track_idx = e.target.getAttribute("data-index");
-            })
+            let dragstart = (e) => {
+                let el = e.target;
+                for (let i = 0; i < 2; i++)
+                    if (el.hasAttribute("data-index"))
+                        break;
+                    else
+                        el = el.parentElement
+                this.dragging_track_idx = el.getAttribute("data-index");
+            }
+            track.addEventListener('dragstart', dragstart)
+            track.addEventListener('touchstart', dragstart)
             track.addEventListener('drop', ()  => this.previous_idx = -1)
+            track.addEventListener('touchend', ()  => this.previous_idx = -1)
         },
         addDropEventListeners: function(track) {
             track.addEventListener('dragover', (e) => {
                 let index = e.target.getAttribute("data-index")
                 this.swapSongs(index);
+                e.preventDefault();
+            })
+            track.addEventListener('touchmove', (e) => {
+                var tl = e.targetTouches[0];
+                let nearest = document.elementFromPoint(tl.clientX, tl.clientY);
+                let el = nearest;
+                if (el)
+                    for (let i = 0; i < 2; i++)
+                        if (el.hasAttribute("data-index"))
+                            break;
+                        else
+                            el = el.parentElement
+                if (el)
+                    this.swapSongs(el.getAttribute("data-index"));
                 e.preventDefault();
             })
         },

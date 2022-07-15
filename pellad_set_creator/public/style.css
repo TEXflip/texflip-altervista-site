@@ -155,6 +155,7 @@ body {
     font-size: 0.8rem;
     font-weight: 700;
     margin-left: 0.25rem;
+    pointer-events: none;
 }
 
 .fake-checkbox.checked .cover {
