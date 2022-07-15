@@ -76,8 +76,8 @@
                     </div>
                     <!-- song row -->
                     <template v-for="(song, idx) in setlist" :key="idx">
-                        <div class="row">
-                            <div class="track" draggable="true" :id="`${song.id}_track`">
+                        <div class="row" :id="`${song.id}_drop`" :data-index="`${idx}`">
+                            <div class="track" draggable="true" :id="`${song.id}_track`" :data-index="`${idx}`">
                                 <div>{{idx + 1}}</div>
                                 <div style="display: flex; align-items: center">
                                     {{song.name}}
@@ -113,6 +113,10 @@ export default {
             new_song_duration_mins: null,
             new_song_duration_secs: null,
             new_song_is_cover: false,
+
+            // variables for the drag and drop logic:
+            dragging_track_idx: null,
+            previous_idx: -1,
         }
     },
     mounted() {
@@ -138,6 +142,7 @@ export default {
             // declare variable that's going to hold the actual
             // html element of the song in the setlist
             let track = null
+            let track_drop = null
 
             // add song to the setlist array and add "checked" class to its label
             if(!checkbox.checked) {
@@ -149,16 +154,20 @@ export default {
                 this.$nextTick(() => {
                     // assign html element to the variable
                     track = document.getElementById(`${id}_track`)
+                    track_drop = document.getElementById(`${id}_drop`)
                     // add drag & drop event listeners to the track element in the setlist
-                    this.addEventListeners(track)
+                    this.addDragEventListeners(track)
+                    this.addDropEventListeners(track_drop)
                 })
             // remove song from the array and remove "checked" class from its label
             } else {
                 // assign html element to the variable
                 track = document.getElementById(`${id}_track`)
+                track_drop = document.getElementById(`${id}_drop`)
                 label.classList.remove('checked')
                 // remove drag & drop event listeners to the track element in the setlist
                 this.removeEventListeners(track)
+                this.removeEventListeners(track_drop)
                 this.setlist.splice(this.setlist.indexOf(song), 1)
             }
 
@@ -246,7 +255,7 @@ export default {
         },
         deleteSong: function() {
             let songId = document.getElementById('delete_song_dropdown').value
-            let index = this.getSongIndexById(songId)
+            let index = this.getSongIndexById(songId.value)
             let name = this.songs[index]["name"];
 
             this.axios.post("https://texflip.altervista.org/pellad_set_creator/songPOST.php", {
@@ -263,34 +272,35 @@ export default {
             this.new_song_duration_secs = null
             this.new_song_is_cover = false
         },
-        addEventListeners: function(track) {
-            track.addEventListener('dragstart', this.dragStart)
+        addDragEventListeners: function(track) {
+            track.addEventListener('dragstart', (e) => {
+                this.dragging_track_idx = e.target.getAttribute("data-index");
+            })
+            track.addEventListener('drop', ()  => this.previous_idx = -1)
+        },
+        addDropEventListeners: function(track) {
             track.addEventListener('dragover', (e) => {
-                let bb = e.target.getBoundingClientRect();
-                let center = (bb.top + bb.bottom)/2.;
-                console.log(center-e.y); // relative position to element center
-                e.preventDefault()
-            })
-            track.addEventListener('drop', (e)  => {
-
-                console.log(e.target.id)
+                let index = e.target.getAttribute("data-index")
+                this.swapSongs(index);
+                e.preventDefault();
             })
         },
-        dragStart: function() {
-            console.log('yep')
-        },
-        swapSongs: function(id_s1, id_s2) {
-            let index1 = this.setlist.map(item => item["id"]).indexOf(id_s1);
-            let index2 = this.setlist.map(item => item["id"]).indexOf(id_s2);
-            let temp = this.setlist[index1];
-            this.setlist[index1] = this.setlist[index2];
-            this.setlist[index2] = temp;
+        swapSongs: function(idx) {
+            if (this.dragging_track_idx == idx || idx == null || this.previous_idx == idx)
+                return
+            this.previous_idx = idx;
+            let temp = this.setlist[this.dragging_track_idx];
+            this.setlist[this.dragging_track_idx] = this.setlist[idx]
+            this.setlist[idx] = temp;
+            this.dragging_track_idx = idx;
         },
         getSongIndexById: function(id){
             return this.songs.map(item => item["id"]).indexOf(id)
         },
-        removeEventListeners: function(track) {
-            track.removeEventListener('drag', this.dragStart())
+        removeEventListeners: function() {
+            // track.removeEventListener('dragstart')
+            // track.removeEventListener('dragover')
+            // track.removeEventListener('drop')
         },
         format_seconds: function(time) {
             time = parseInt(time);

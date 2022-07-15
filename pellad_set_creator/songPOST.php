@@ -1,6 +1,5 @@
 <?php
-	//include "loadSongs.php";
-    header('Content-type: application/json');
+    header('content-type: application/json');
     header("Access-Control-Allow-Origin: *");
     
     $aResult = array();
