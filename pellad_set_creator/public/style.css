@@ -34,6 +34,10 @@ body {
     margin-top: 1rem;
 }
 
+#app{
+    max-width: min(600px, 100vw);
+}
+
 .main {
     padding: 1rem;
 }
@@ -130,7 +134,7 @@ body {
     font-size: 1rem;
     display: flex;
     flex-grow: 1;
-    margin: 0.5rem
+    margin: 0.5rem;
 }
 
 .fake-checkbox {
@@ -140,6 +144,11 @@ body {
     padding: 0.5rem 1rem;
     border-radius: 8px;
     margin: 0.5rem;
+    /* max-width: 260px;  */
+    overflow: hidden;
+    overflow-wrap: break-word;
+    text-overflow: ellipsis;
+    /* max-width: 80vw; */
 }
 
 .checked {
@@ -166,7 +175,7 @@ body {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    max-width: 600px;
+    /* max-width: 600px; */
     background-color: var(--bg-2);
     padding: 0.5rem;
     border-radius: 12px;
@@ -208,7 +217,12 @@ body {
     padding: 0.5rem 1rem;
     border-radius: 10px;
     width: 100%;
+    max-width: 100%;
     margin: 0.5rem 0;
+
+    overflow: clip;
+    overflow-wrap: break-word;
+    text-overflow: ellipsis;
 }
 
 .noselect {

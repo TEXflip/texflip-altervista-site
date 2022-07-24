@@ -37,13 +37,11 @@
                             <label style="margin-left: 0.5rem">Delete a song</label>
                             <div class="delete-song-content">
                                 <!-- dropdown from which the user can select which song to delete -->
-                                <div style="display: flex; flex: 1">
-                                    <select name="delete_song_dropdown" class="input-textbox" id="delete_song_dropdown">
-                                        <template v-for="song in songs" :key="song.id">
-                                            <option :value="song.id">{{song.name}}</option>
-                                        </template>
-                                    </select>
-                                </div>
+                                <select name="delete_song_dropdown" class="input-textbox" id="delete_song_dropdown">
+                                    <template v-for="song in songs" :key="song.id">
+                                        <option :value="song.id">{{song.name}}</option>
+                                    </template>
+                                </select>
                                 <!-- delete button -->
                                 <div class="delete-song-button">
                                     <button type="button" class="button danger" @click="deleteSong()">Delete</button>
