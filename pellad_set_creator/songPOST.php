@@ -1,6 +1,7 @@
 <?php
-    header('content-type: application/json');
     header("Access-Control-Allow-Origin: *");
+    header('Access-Control-Allow-Headers: Content-Type');
+    header('content-type: application/json');
     
     $aResult = array();
     $_POST = json_decode(file_get_contents("php://input"), true);
