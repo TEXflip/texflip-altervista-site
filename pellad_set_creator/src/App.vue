@@ -255,7 +255,7 @@ export default {
         },
         deleteSong: function() {
             let songId = document.getElementById('delete_song_dropdown').value
-            let index = this.getSongIndexById(songId.value)
+            let index = this.getSongIndexById(songId)
             let name = this.songs[index]["name"];
 
             this.axios.post("https://texflip.altervista.org/pellad_set_creator/songPOST.php", {
