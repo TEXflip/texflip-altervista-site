@@ -1,7 +1,7 @@
 <template>
     <div class="main">
         <div class="manage">
-            <div class="row" style="justify-content: space-around">
+            <div class="row" style="justify-content: space-around; flex-wrap: wrap;">
                 <!-- manage songs button - shows or hides the collapse -->
                 <button type="button" class="button" @click="toggleSongsManager()">Manage songs</button>
                 <!-- clear setlist buttons -->
