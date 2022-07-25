@@ -34,16 +34,22 @@ body {
     margin-top: 1rem;
 }
 
-#app{
-    max-width: min(600px, 100vw);
-}
-
 .main {
     padding: 1rem;
+    max-width: 600px;
 }
 
 .manage {
     margin-bottom: 1rem;
+}
+
+.control-buttons {
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.control-buttons>button {
+    margin-top: 1rem;
 }
 
 .button {
@@ -59,11 +65,17 @@ body {
     border: 0px;
     color: var(--font-col);
     font-size: 1rem;
+    font-family: 'Inter', sans-serif;
     transition: background-color 0.2s ease-in-out;
 }
 
 .button:hover {
     background-color: var(--normal-hover);
+}
+
+.add-song-button {
+    padding: 0;
+    justify-content: center;
 }
 
 .danger {
@@ -85,9 +97,13 @@ body {
 
 .collapse.open {
     transform: translateY(1em);
-    height: 180px;
+    height: 190px;
     opacity: 1;
     margin-bottom: 1rem;
+}
+
+.collapse.open.manage-setlists {
+    height: 155px;
 }
 
 .collapse-content {
@@ -141,13 +157,14 @@ body {
     display: flex;
     align-items: center;
     background-color: var(--bg-3);
-    padding: 0.5rem 1rem;
+    padding: 0.25rem 0.75rem;
     border-radius: 8px;
     margin: 0.5rem;
     /* max-width: 260px;  */
     overflow: hidden;
     overflow-wrap: break-word;
     text-overflow: ellipsis;
+    font-size: 0.9rem;
     /* max-width: 80vw; */
 }
 
@@ -157,11 +174,11 @@ body {
 
 .cover {
     display: flex;
-    padding: 0.25rem;
+    padding: 0.05rem 0.25rem;
     border-radius: 5px;
     color: var(--bg-3);
     background-color: var(--font-col);
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     font-weight: 700;
     margin-left: 0.25rem;
     pointer-events: none;
@@ -219,7 +236,6 @@ body {
     width: 100%;
     max-width: 100%;
     margin: 0.5rem 0;
-
     overflow: clip;
     overflow-wrap: break-word;
     text-overflow: ellipsis;
@@ -251,9 +267,15 @@ body {
 }
 
 @media screen and (max-width: 768px) {
-    .collapse.open {
-        height: 340px;
+    .add-song-button {
+        padding: 0.5rem;
     }
+    .collapse.open {
+        height: 350px;
+    }
+    /* .collapse.open.manage-setlists {
+        height: 175px;
+    } */
     .new-song {
         flex-direction: column;
     }

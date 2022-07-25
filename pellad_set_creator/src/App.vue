@@ -1,7 +1,7 @@
 <template>
     <div class="main">
         <div class="manage">
-            <div class="row" style="justify-content: space-around; flex-wrap: wrap;">
+            <div class="row control-buttons">
                 <!-- manage songs button - shows or hides the collapse -->
                 <button type="button" class="button" @click="toggleSongsManager()">Manage songs</button>
                 <!-- clear setlist buttons -->
@@ -33,7 +33,7 @@
                                         id="song_is_cover">
                                 </div>
                                 <!-- add button -->
-                                <div style="padding: 0.5rem; justify-content: center;">
+                                <div class="add-song-button">
                                     <button type="button" class="button" @click="addSong()">Add</button>
                                 </div>
                             </div>
@@ -50,16 +50,16 @@
                                 </select>
                                 <!-- delete button -->
                                 <div class="delete-song-button">
-                                    <button type="button" class="button danger" @click="deleteSong()">Delete</button>
+                                    <button type="button" class="button danger" style="margin: 0" @click="deleteSong()">Delete</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="collapse" id="collapse_setlists">
+                <div class="collapse manage-setlists" id="collapse_setlists">
                     <div class="collapse-content" id="collapse_content_setlists">
-                        <div class="delete-song" style="margin-top: 1rem">
-                            <label style="margin-left: 0.5rem">Load or Delete SetLists</label>
+                        <div class="delete-song">
+                            <label style="margin-left: 0.5rem">Load or delete a setlist</label>
                             <div class="delete-song-content">
                                 <!-- dropdown from which the user can select which setlist to delete -->
                                 <select name="delete_setlists_dropdown" class="input-textbox"
@@ -70,7 +70,7 @@
                                 </select>
                             </div>
                             <!-- buttons -->
-                            <div class="delete-song-button">
+                            <div class="delete-song-button" style="margin: 0; justify-content: center">
                                 <button type="button" class="button" @click="loadSetlist()">Load</button>
                                 <button type="button" class="button danger" @click="deleteSetlists()">Delete</button>
                             </div>
@@ -105,7 +105,7 @@
                         <div class="row" :id="`${song.id}_drop`" :data-index="`${idx}`">
                             <div class="track" draggable="true" :id="`${song.id}_track`" :data-index="`${idx}`">
                                 <div style="pointer-events: none">{{ idx + 1 }}</div>
-                                <div style="display: flex; align-items: center, pointer-events: none">
+                                <div style="display: flex; align-items: center; pointer-events: none">
                                     {{ song.name }}
                                     <!-- add cover badge if the current song is a cover -->
                                     <template v-if="song.isCover">
@@ -117,13 +117,15 @@
                         </div>
                     </template>
                 </div>
-                <div class="row" style="flex-wrap: wrap;">
-                    <input class="input-textbox" placeholder="setlist name..." type="text" id="textbox_save_setlist">
-                    <div class="delete-song-button">
-                        <button type="button" class="button" @click="addSetlist()">Save Setlist</button>
-                    </div>
-                    <div class="delete-song-button">
-                        <button type="button" class="button" @click="()=>{}">Update (TODO)</button>
+                <div class="row" style="flex-wrap: wrap; margin-top: 1.5rem">
+                    <input class="input-textbox" placeholder="setlist name" type="text" v-model="new_setlist_name" id="textbox_save_setlist">
+                    <div class="row">
+                        <div class="delete-song-button">
+                            <button type="button" class="button" @click="addSetlist()">Save Setlist</button>
+                        </div>
+                        <div class="delete-song-button">
+                            <button type="button" class="button" @click="()=>{}">Update (TODO)</button>
+                        </div>
                     </div>
                 </div>
             </template>
@@ -149,6 +151,7 @@ export default {
             new_song_duration_mins: null,
             new_song_duration_secs: null,
             new_song_is_cover: false,
+            new_setlist_name: '',
 
             // variables for the drag and drop logic:
             dragging_track_idx: null,
@@ -248,28 +251,22 @@ export default {
         },
         calculateTotalTime: function () {
             if (this.setlist.length > 0) {
-                // creating a moment object with time 00:00
-                // the actual duration time will be added later
-                // this.totalTime = moment(0, 'mm:ss')
+                // creating a starting variable with time 00:00
                 let tot_time_in_sec = 0
 
-                // sum duration of each song to the base moment object
+                // sum duration of each song to the starting variable
                 this.setlist.forEach(song => {
                     // split string to get minutes and seconds
                     let split_time = song.duration.split(':')
                     let minutes = parseInt(split_time[0])
                     let seconds = parseInt(split_time[1])
 
-                    // add current song duration to the base moment object
-                    // let tmp_time = moment.duration({ minutes: minutes, seconds: seconds })
-                    // this.totalTime.add(tmp_time)
+                    // add current song duration to the starting variable
                     tot_time_in_sec += minutes * 60 + seconds
                 })
 
                 // assign the new total time to the reactive property
-                // this.totalTime = this.totalTime.format('mm:ss')
                 this.totalTime = this.format_seconds(tot_time_in_sec)
-
             } else {
                 this.totalTime = null
             }
@@ -354,7 +351,7 @@ export default {
         },
         addSetlist: function () {
             // making sure inputs are okay
-            if (this.setlist.length > 0) {
+            if (this.setlist.length > 0 && this.new_setlist_name != '') {
                 let id_u_int_16_array = []
                 // build the buffer of ids. The buffer works with only 8 bit
                 // we save 16 bit u_int, so 2 pushes for one id
@@ -367,11 +364,10 @@ export default {
 
                 this.axios.post("https://texflip.altervista.org/pellad_set_creator/setlistPOST.php", {
                     type: "save",
-                    name: document.getElementById('textbox_save_setlist').value,
+                    name: this.new_setlist_name,
                     songs: String(buffer), // convert the buffer to string (JSON properties can have only strings and numbers)
-                }).then(res => {
-                    console.log(res)
-                    document.getElementById('textbox_save_setlist').value = ""
+                }).then(() => {
+                    this.new_setlist_name = ''
                     this.loadSetlists()
                 })
             } else {
