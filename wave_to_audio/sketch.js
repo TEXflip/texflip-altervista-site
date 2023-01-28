@@ -17,7 +17,8 @@ function setup() {
     const function_textbox = document.getElementById("functiontext");
     function_textbox.addEventListener("input", function(e) {
         try {
-            expr = math.compile(e.target.value)
+            formula_string = e.target.value.toLowerCase()
+            expr = math.compile(formula_string)
             draw_function()
         } catch (error) {
             
