@@ -65,6 +65,7 @@ var LetterProperties = {
 }
 
 var PageLinks = [
+	{ title: "Function Listener", link: "wave_to_audio" },
 	{ title: "Julia Set", link: "JuliaSet" },
 	{ title: "Snek The Snak", link: "Snek_The_Snak" },
 	{ title: "The Reverser", link: "ReverceVoice" },
