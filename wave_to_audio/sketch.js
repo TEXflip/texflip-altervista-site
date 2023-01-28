@@ -53,7 +53,7 @@ function draw_function(){
     }
 }
 
-function mousePressed(){
+function mousePressed() {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     // (new window.AudioContext).
     myArrayBuffer = audioCtx.createBuffer(
