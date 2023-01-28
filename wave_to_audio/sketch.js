@@ -99,7 +99,6 @@ function runtime_play() {
         }
 
         // normalize to [1, -1] the buffer
-        console.log(_max)
         for (let i = 0; i < myArrayBuffer.length; i++)
             nowBuffering[i] /= (_max + 0.001);
     }
