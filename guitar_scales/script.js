@@ -87,6 +87,7 @@ function updateBollini() {
 		for (const pos of positions)
 			createBollino(pos.string, pos.fret, Note.SEMITONES_TO_INTERVALS[s % 12], foundamental.symbol());
 	}
+	updateShowNotes();
 }
 
 
