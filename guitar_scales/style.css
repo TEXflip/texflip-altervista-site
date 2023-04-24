@@ -235,6 +235,7 @@ option {
 	font-family: Arial;
 	font-weight: bold;
 	font-size: 1.5em;
+	user-select: none;
 }
 
 .white-key:hover .white-keynote {
