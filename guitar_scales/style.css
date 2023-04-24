@@ -117,6 +117,7 @@ body {
 
 .bollino {
 	position: absolute;
+	user-select: none;
 	z-index: 3;
 	width: var(--bollino-size);
 	height: var(--bollino-size);
@@ -272,6 +273,7 @@ option {
 	font-weight: bold;
 	font-size: 1em;
 	z-index: 2;
+	user-select: none;
 }
 
 .bk-detail {
