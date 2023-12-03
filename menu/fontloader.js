@@ -142,22 +142,6 @@ function drawPathWithArrows(ctx, path) {
     });
 }
 
-
-function onFontLoaded(font) {
-    window.font = font;
-    var w = cellWidth - cellMarginLeftRight * 2,
-        h = cellHeight - cellMarginTop - cellMarginBottom,
-        head = font.tables.head,
-        maxHeight = head.yMax - head.yMin;
-    fontScale = Math.min(w / (head.xMax - head.xMin), h / maxHeight);
-    fontSize = fontScale * font.unitsPerEm;
-    fontBaseline = cellMarginTop + h * head.yMax / maxHeight;
-
-    var numPages = Math.ceil(font.numGlyphs / cellCount);
-    for (var i = 0; i < numPages; i++)
-        var lastIndex = Math.min(font.numGlyphs - 1, (i + 1) * cellCount - 1);
-}
-
 function onReadFile(e) {
     document.getElementById('font-name').innerHTML = '';
     var file = e.target.files[0];

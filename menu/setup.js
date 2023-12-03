@@ -66,8 +66,9 @@ function setup() {
             showErrorMessage(err.toString());
             return;
         }
-        onFontLoaded(font);
-        setAllWords();
+        window.font = font;
+        createTitle("The Weird World of Tex");
+        loaded = true;
     });
     textFont(Myfont);
 

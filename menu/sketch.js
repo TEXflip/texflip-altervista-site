@@ -1,8 +1,4 @@
 var phrases = [], AllNotStatic = true;
-function setAllWords() {
-    createTitle("The Weird World of Tex");
-    loaded = true;
-}
 
 function draw() {
     // translate(-width/2,-height/2,0);
@@ -13,6 +9,11 @@ function draw() {
             words[i].show();
         }
     }
+}
+
+function windowResized() {
+    resizeCanvas(window.innerWidth, window.innerHeight);
+    createTitle("The Weird World of Tex");
 }
 
 function mousePressed() {
@@ -31,9 +32,6 @@ function mousePressed() {
     AllNotStatic = false;
 }
 
-function newPhisicWord(x, y, Char, fontDimension, IsStatic = false) {
-    words.push(new Word2(x, y, Char, fontDimension, IsStatic));
-}
 
 function createTitle(string) {
     let maxWidth = 1080, baseX, fontSize;
@@ -45,13 +43,23 @@ function createTitle(string) {
         fontSize = maxWidth / (string.length + 1);
         baseX = (width - maxWidth) / 2;
     }
-    let dist = fontSize, i = 0;
-    for (const c of string) {
-        if (c != ' ')
-            newPhisicWord(baseX + dist * i++, 100, c, fontSize, false);
-        else
-            i++;
-    }
+    let dist = fontSize, d = 0, i = 0;
+    if (words.length == 0)
+        for (const c of string) {
+            d++;
+            if (c != ' ') {
+                words.push(new Word2(baseX + dist * d, 100, c, fontSize, false));
+                i++;
+            }
+        }
+    else
+        for (const c of string) {
+            d++;
+            if (c != ' ') {
+                words[i].changePos(baseX + dist * d, 100, fontSize);
+                i++;
+            }
+        }
 }
 
 function computeWave(i, f) {
@@ -65,12 +73,12 @@ function computeWave(i, f) {
 function renderMyBackground() {
     background(255, 191, 0);
     let boatPos = 180, xBoat, yBoat, imgRes = 166, res = 200,
-    p1 = boatPos - parseInt(30 * res / width),
-    p2 = boatPos + parseInt(30 * res / width),
-    x1 = p1 * width / res,
-    x2 = p2 * width / res,
-    y1 = computeWave(p1, frameCount),
-    y2 = computeWave(p2, frameCount);
+        p1 = boatPos - parseInt(30 * res / width),
+        p2 = boatPos + parseInt(30 * res / width),
+        x1 = p1 * width / res,
+        x2 = p2 * width / res,
+        y1 = computeWave(p1, frameCount),
+        y2 = computeWave(p2, frameCount);
 
     push();
     yBoat = (y2 + y1) / 2 + 400;
@@ -94,26 +102,21 @@ function renderMyBackground() {
 }
 
 class Word2 {
+    LP = LetterProperties;
+
     constructor(x, y, char, fontDimension, IsStatic = false) {
-        let LP = LetterProperties;
-
-        this.ropeLength = 10;
-        this.fontDimension = fontDimension;
-        this.IsStatic = IsStatic;
-
-        this.Xoffs = LP[char].offset[0] * (fontDimension / 100);
-        this.Yoffs = LP[char].offset[1] * (fontDimension / 100);
-        this.XanchorOffs = LP[char].anchorOffset[0] * (fontDimension / 100);
-        this.YanchorOffs = LP[char].anchorOffset[1] * (fontDimension / 100);
-        this.heighCorrection = LP[char].heighCorrection * (fontDimension / 100);
-
-        this.ropePos = { x: x, y: y - this.Yoffs + this.YanchorOffs + this.heighCorrection + (this.fontDimension * 1.667 - 83.333) };
+        this.x = x;
+        this.y = y;
         this.char = char;
-        this.V = Vertices.fromPath(displayGlyphData(LP[char].index, this.fontDimension));
-        let option = { collisionFilter: { group: 0, category: 1, mask: -1 }, frictionAir: 0.001, density: 0.0005 };
-        this.body = Bodies.fromVertices(x, y, this.V, option, true);
+        this.ropeLength = 10;
+        this.IsStatic = IsStatic;
+        this.fontDimension = fontDimension;
+        
+        this.updateProps(fontDimension);
 
-        this.length = this.fontDimension * 2.667 - 33.3;
+        this.option = { collisionFilter: { group: 0, category: 1, mask: -1 }, frictionAir: 0.001, density: 0.0005 };
+        this.body = Bodies.fromVertices(this.x, this.y, this.V, this.option, true);
+
         this.composite = Composite.create()
         this.lastConstraint = MatterSprings.Spring.create({
             pointA: this.ropePos,
@@ -131,6 +134,35 @@ class Word2 {
         this.precAngle = 0;
         this.angleVel = 0;
         this.precAngleVel = 0;
+    }
+
+    del() {
+        Composite.remove(world, this.composite);
+        World.remove(world, this.composite);
+    }
+
+    changePos(x, y, fontDimension) {
+        this.x = x;
+        this.y = y;
+        this.fontDimension = fontDimension;
+        this.updateProps();
+        this.lastConstraint.length = this.length;
+        this.lastConstraint.pointA = this.ropePos;
+        this.lastConstraint.pointB = { x: this.XanchorOffs, y: this.YanchorOffs };
+        this.lastConstraint.bodyB = this.body;
+    }
+
+    updateProps() {
+        this.Xoffs = this.LP[this.char].offset[0] * (this.fontDimension / 100);
+        this.Yoffs = this.LP[this.char].offset[1] * (this.fontDimension / 100);
+        this.XanchorOffs = this.LP[this.char].anchorOffset[0] * (this.fontDimension / 100);
+        this.YanchorOffs = this.LP[this.char].anchorOffset[1] * (this.fontDimension / 100);
+        this.heighCorrection = this.LP[this.char].heighCorrection * (this.fontDimension / 100);
+
+        this.ropePos = { x: this.x, y: this.y - this.Yoffs + this.YanchorOffs + this.heighCorrection + (this.fontDimension * 1.667 - 83.333) };
+        this.V = Vertices.fromPath(displayGlyphData(this.LP[this.char].index, this.fontDimension));
+
+        this.length = this.fontDimension * 2.667 - 33.3;
     }
 
     show() {
