@@ -167,4 +167,5 @@ function windowResized() {
 	small_side = min(width, height);
 	large_side = max(width, height);
 	input_n2.position(38, height - 27);
+	update();
 }
