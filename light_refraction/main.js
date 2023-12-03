@@ -156,8 +156,8 @@ function mouseMoved() {
 	update();
 }
 
-function draw() {
-	
+function touchMoved() {
+	update();
 }
 
 function windowResized() {
