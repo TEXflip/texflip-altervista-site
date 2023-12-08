@@ -1,17 +1,6 @@
 // Matter js Variables
 Matter.use('matter-springs');
-var Engine = Matter.Engine,
-    Render = Matter.Render,
-    Runner = Matter.Runner,
-    World = Matter.World,
-    Bodies = Matter.Bodies,
-    Composites = Matter.Composites,
-    Constraint = Matter.Constraint,
-    Composite = Matter.Composite,
-    Vertices = Matter.Vertices,
-    MouseConstraint = Matter.MouseConstraint,
-    Mouse = Matter.Mouse,
-    Vector = Matter.Vector,
+var Vector = Matter.Vector,
     render,
     world,
     engine;
@@ -52,7 +41,7 @@ function setup() {
     let canv = createCanvas(width, height);
     canv.parent("canvas-container");
 
-    engine = Engine.create();
+    engine = Matter.Engine.create();
     world = engine.world;
 
     imageMode(CENTER);
@@ -72,7 +61,7 @@ function setup() {
     });
     textFont(Myfont);
 
-    World.add(world, Bodies.rectangle(width / 2, height + 50, width + 1000, 100, { isStatic: true }));
+    Matter.World.add(world, Matter.Bodies.rectangle(width / 2, height + 50, width + 1000, 100, { isStatic: true }));
     var lastScrollY = document.body.scrollTop;
     Thecanvas = document.getElementById('defaultCanvas0');
     document.body.addEventListener('mousedown', function (e) {
@@ -91,7 +80,7 @@ function setup() {
             Matter.Body.applyForce(comp.bodies[0], comp.bodies[0].position, Vector.create(0, -deltaY * 0.0001))
         }
     })
-    render = Render.create({
+    render = Matter.Render.create({
         element: document.getElementById('canvas-container'),
         canvas: Thecanvas,
         engine: engine,
@@ -106,16 +95,16 @@ function setup() {
     });
 
     // engine.world.gravity.y = 0;
-    Engine.run(engine);
+    Matter.Engine.run(engine);
     // Render.run(render);
 
-    var mouse = Mouse.create(Thecanvas),
-        mouseConstraint = MouseConstraint.create(engine, {
+    var mouse = Matter.Mouse.create(Thecanvas),
+        mouseConstraint = Matter.MouseConstraint.create(engine, {
             mouse: mouse,
             constraint: {
                 stiffness: 0.2,
             }
         });
 
-    Composite.add(world, mouseConstraint);
+    Matter.Composite.add(world, mouseConstraint);
 }
