@@ -9,10 +9,19 @@ class Particle {
 		this.vel = createVector(random(-1, 1.1), random(-1, 1));
 		this.x = this.pos.x;
 		this.y = this.pos.y;
-		this.dimension = 25;
+		this.dimension = 28;
 		this.drawFish = true;
 		this.maxVel = 20;
 		this.stableVel = 5;
+		this.color = [200, 40, 78.4];
+		this.margin = 50;
+		this.boundary_force = 0.01;
+	}
+
+	color_from_vel(){
+		const speed = this.vel.mag();
+		const v = map(speed, 0, this.maxVel, 60, 255);
+		return color(this.color[0], this.color[1], v);
 	}
 
 	updateVelocity(neighbours, func, param) {
@@ -37,19 +46,19 @@ class Particle {
 
 	show() {
 		const vel = p5.Vector.normalize(this.vel).mult(this.dimension);
-		const v1 = p5.Vector.add(vel, this.pos);
-		const v2 = p5.Vector.rotate(vel, HALF_PI).mult(0.02 * this.dimension).add(this.pos);
-		const v3 = p5.Vector.rotate(vel, -HALF_PI).mult(0.02 * this.dimension).add(this.pos);
 		if (this.drawFish) {
 			push()
 			translate(this.x, this.y);
 			rotate(atan2(-vel.y, -vel.x));
-			tint(120, 120, 200);
+			tint(this.color_from_vel());
 			image(fish, 0, 0, this.dimension, this.dimension * 0.46)
 			pop()
 		}
 		else {
-			fill(100, 100, 255);
+			const v1 = p5.Vector.add(vel, this.pos);
+			const v2 = p5.Vector.rotate(vel, HALF_PI).mult(0.02 * this.dimension).add(this.pos);
+			const v3 = p5.Vector.rotate(vel, -HALF_PI).mult(0.02 * this.dimension).add(this.pos);
+			fill(this.color_from_vel());
 			beginShape()
 			vertex(v1.x, v1.y)
 			vertex(v2.x, v2.y)
@@ -59,25 +68,63 @@ class Particle {
 	}
 
 	detectBoundary() {
-		const v = p5.Vector.normalize(this.vel).add(this.pos);
+		const v = this.pos;
 		const out = createVector(0, 0);
-		const f = 0.01,
-			margin = 50;
-		if (v.x > width - margin)
-			out.x = -f * (v.x - width + margin);
-		else if (v.x < 0 + margin)
-			out.x = f * (-v.x + margin);
-		if (v.y > height - margin)
-			out.y = -f * (v.y - height + margin);
-		else if (v.y < 0 + margin)
-			out.y = f * (-v.y + margin);
+		const f = this.boundary_force;
+		if (v.x > width - this.margin)
+			out.x = -f * (v.x - width + this.margin);
+		else if (v.x < 0 + this.margin)
+			out.x = f * (-v.x + this.margin);
+		if (v.y > height - this.margin)
+			out.y = -f * (v.y - height + this.margin);
+		else if (v.y < 0 + this.margin)
+			out.y = f * (-v.y + this.margin);
 		return out;
+	}
+}
+
+class Grid {
+	constructor(w, h, size = 15) {
+		this.grid_size = size;
+		this.grid_map = new Array(Math.ceil(w / size));
+		for (let i = 0; i < this.grid_map.length; i++)
+			this.grid_map[i] = new Array(Math.ceil(h / size));
+	}
+	update(particles) {
+		for (let i = 0; i < this.grid_map.length; i++)
+			for (let j = 0; j < this.grid_map[i].length; j++)
+				this.grid_map[i][j] = undefined;
+		for (const p of particles) {
+			let x = Math.min(Math.max(0, p.x), width - 1);
+			let y = Math.min(Math.max(0, p.y), height - 1);
+			const i = Math.floor(x / this.grid_size),
+				j = Math.floor(y / this.grid_size);
+			if (this.grid_map[i][j] == undefined)
+				this.grid_map[i][j] = [];
+			p.color = color(i%2 * 255, j%2 * 255, 255 - (i%2 + j%2) * 255);
+			this.grid_map[i][j].push(p);
+		}
+	}
+	nearest(start, r) {
+		let neighbours = [];
+		let i = Math.floor(start.x / this.grid_size),
+			j = Math.floor(start.y / this.grid_size),
+			r_i = Math.ceil(r / this.grid_size);
+		for (let k = Math.max(0, i - r_i); k < Math.min(this.grid_map.length, i + r_i); k++)
+			for (let l = Math.max(0, j - r_i); l < Math.min(this.grid_map[k].length, j + r_i); l++)
+				if (this.grid_map[k][l] != undefined)
+					for (const p of this.grid_map[k][l])
+						if (p5.Vector.dist(p.pos, start) < r)
+							neighbours.push(p);
+		return neighbours;
 	}
 }
 
 class Swarm {
 	constructor(n) {
 		this.swarm = [];
+		this.fps = 60;
+		this.grid = new Grid(width, height, 100);
 
 		for (let i = 0; i < n; i++) {
 			const x = random(0, width);
@@ -95,14 +142,24 @@ class Swarm {
 	}
 
 	update() {
+		const startTime = performance.now();
+		// this.grid.update(this.swarm);
 		for (const p of this.swarm) {
-			let neighbours = this.nearest(p.pos, 10);
+			let neighbours = this.near(p, max(width, height) / 10);
+			// let neighbours = this.grid.nearest(p.pos, 100);
+			// console.log(neighbours.length);
 
 			p.updateVelocity(neighbours, this.cohesion, this.cohesionCoeff);
 			p.updateVelocity(neighbours, this.alignment, this.alignmentCoeff);
 			p.updateVelocity(neighbours, this.separation, this.separationCoeff);
 			p.update();
 		}
+		const endTime = performance.now();
+		const fps = 1000/(endTime - startTime);
+		const alpha = 0.02;
+		this.fps = (1-alpha) * this.fps + alpha * fps;
+		// const fps = endTime - startTime;
+		console.log("FPS: " + this.fps.toFixed(0));
 	}
 
 	show() {
@@ -114,7 +171,8 @@ class Swarm {
 		let pAvg = createVector(0, 0);
 		for (const p of neighbours)
 			pAvg.add(p.pos);
-		pAvg.div(neighbours.length);
+		if (neighbours.length > 0)
+			pAvg.div(neighbours.length);
 		return pAvg.sub(pos).div(cohesionCoeff);
 	}
 
@@ -122,7 +180,8 @@ class Swarm {
 		let pAvg = createVector(0, 0);
 		for (const p of neighbours)
 			pAvg.add(p.vel);
-		pAvg.div(neighbours.length);
+		if (neighbours.length > 0)
+			pAvg.div(neighbours.length);
 		return pAvg.sub(vel).div(alignmentCoeff);
 	}
 
@@ -143,6 +202,16 @@ class Swarm {
 			pAvg.sub(p5.Vector.mult(sub.div(25), s));
 		}
 		return pAvg;
+	}
+
+	near(fish, r) {
+		let neighbours = [];
+		for (const p of this.swarm){
+			if (p5.Vector.dist(p.pos, fish.pos) < r)
+				neighbours.push(p);
+		}
+		fish.color[1] = map(neighbours.length, 0, this.swarm.length/2, 0, 255);
+		return neighbours;
 	}
 
 	nearest(start, n) {

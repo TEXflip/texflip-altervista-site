@@ -4,6 +4,7 @@ let sliderCohesion, sliderAlign, sliderSep;
 function setup() {
 	createCanvas(window.innerWidth, window.innerHeight, WEBGL);
 	imageMode(CENTER)
+	colorMode(HSB);
 	swarm = new Swarm(tot);
 
 	sliderCohesion = createSlider(0, 100, 42.9686);
@@ -12,13 +13,14 @@ function setup() {
 	sliderAlign.position(10, 25)
 	sliderSep = createSlider(1, 200, 40);
 	sliderSep.position(10, 45)
+	// scale(3);
 }
 
 function draw() {
-	background(0, 0, 30);
+	// background(0, 0, 30);
+	background(240, 100, 11.8);
 	translate(-width / 2, -height / 2);
 	swarm.cohesionCoeff = Math.pow(2, -0.13286413 * (sliderCohesion.value() - 100))+9;
-	console.log(swarm.cohesionCoeff)
 	swarm.alignmentCoeff = map(sliderAlign.value(), 0, 100, 100, 1);
 	swarm.separationCoeff = sliderSep.value();
 	swarm.update();
