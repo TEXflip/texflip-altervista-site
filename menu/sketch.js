@@ -2,6 +2,7 @@ var phrases = [], AllNotStatic = true;
 var sx_old = window.screenX;
 var sy_old = window.screenY;
 var title = "The Weird World of Tex";
+document.title = title;
 
 function draw() {
     renderMyBackground()

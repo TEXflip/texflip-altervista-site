@@ -43,8 +43,12 @@ function setup() {
     text_input.setAttribute('type', "text");
     text_input.setAttribute('id', "title_changer");
     text_input.oninput = function () {
-        title = this.value;
-        createTitle(this.value);
+        if (this.value == "" || this.value == null || this.value == undefined)
+            title = "The Weird World of Tex";
+        else
+            title = this.value;
+        document.title = title;
+        createTitle(title);
     }
     text_input.setAttribute('placeholder', "???!?!?!??");
     li.appendChild(text_input);
