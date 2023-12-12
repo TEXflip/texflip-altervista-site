@@ -3,6 +3,10 @@
   src: local("Fipps-Regular"), url(Fipps-Regular.otf) format("truetype");
 }
 
+:root{
+  --color-font: #1e1e1e;
+}
+
 html {
   overflow-y: hidden;
   overflow-x: hidden;
@@ -13,7 +17,7 @@ body {
   margin: 0;
   font-family: "Fipps-Regular";
   font-size: 15pt;
-  color: rgb(30, 30, 30);
+  color: var(--color-font);
   background-color: rgb(100, 100, 255);
   letter-spacing: 0.5pt;
   position: absolute;
@@ -63,14 +67,49 @@ input[type=range]::-moz-range-thumb {
   -webkit-appearance: none;
 }
 
-/* A */
+/* INPUT TEXT */
 
-a {
+input[type=text] {
+  padding: 0em 0em 1em 1em;
+  margin: 2em 0em 1em 0px;
+  box-sizing: border-box;
+  color: var(--color-font);
+  background-color: rgba(0, 0, 0, 0.39);
+  border-radius: 3em;
+  border-color: var(--color-font);
+  font-size: medium;
+  font-family: "Fipps-Regular";
+  caret-color: var(--color-font);
+}
+
+input[type=text]:hover {
+  background-color: rgba(30, 30, 30, 0.25);
+}
+
+::placeholder {
+  color: rgba(30, 30, 30, 0.6);
+  opacity: 1; /* Firefox */
+}
+
+.clickable {
+  cursor: pointer;
   pointer-events: all;
 }
 
+::-moz-selection { /* Code for Firefox */
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(30, 30, 30, 0.8);
+}
+
+::selection {
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(30, 30, 30, 0.8);
+}
+
+/* A */
+
 a:link {
-  color: rgb(30, 30, 30)
+  color: var(--color-font);
 }
 
 a:hover {

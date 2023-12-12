@@ -1,4 +1,16 @@
-var LetterProperties = {
+var LetterProperties = {	
+	"0": { index: 17, offset: [-51.3, 61], anchorOffset: [0, -50], heighCorrection: 0 },
+	"1": { index: 18, offset: [-36.5, 62], anchorOffset: [0, -50], heighCorrection: 0 },
+	"2": { index: 19, offset: [-50, 60], anchorOffset: [0, -50], heighCorrection: 0 },
+	"3": { index: 20, offset: [-51, 62], anchorOffset: [0, -50], heighCorrection: 0 },
+	"4": { index: 21, offset: [-55.5, 68.5], anchorOffset: [0, -50], heighCorrection: 0 },
+	"5": { index: 22, offset: [-47.5, 64.5], anchorOffset: [0, -50], heighCorrection: 0 },
+	"6": { index: 23, offset: [-47, 61], anchorOffset: [0, -50], heighCorrection: 0 },
+	"7": { index: 24, offset: [-37, 71.5], anchorOffset: [0, -50], heighCorrection: 0 },
+	"8": { index: 25, offset: [-49.5, 62], anchorOffset: [0, -50], heighCorrection: 0 },
+	"9": { index: 26, offset: [-52.5, 63.5], anchorOffset: [0, -50], heighCorrection: 0 },
+	":": { index: 27, offset: [-26, 48.5], anchorOffset: [0, -50], heighCorrection: 0 },
+
 	"A": { index: 34, offset: [-51, 60], anchorOffset: [0, -50], heighCorrection: 0 },
 	"B": { index: 35, offset: [-49, 61], anchorOffset: [0, -50], heighCorrection: 0 },
 	"C": { index: 36, offset: [-50, 62], anchorOffset: [0, -50], heighCorrection: 0 },
@@ -25,6 +37,7 @@ var LetterProperties = {
 	"X": { index: 57, offset: [-57, 62], anchorOffset: [0, -50], heighCorrection: 0 },
 	"Y": { index: 58, offset: [-63, 71], anchorOffset: [0, -50], heighCorrection: 0 },
 	"Z": { index: 59, offset: [-51, 61], anchorOffset: [0, -50], heighCorrection: 0 },
+
 	"a": { index: 66, offset: [-56, 48.5], anchorOffset: [0, -50], heighCorrection: 0 },
 	"b": { index: 67, offset: [-45, 57], anchorOffset: [0, -50], heighCorrection: 0 },
 	"c": { index: 68, offset: [-45, 49], anchorOffset: [0, -50], heighCorrection: 0 },
@@ -51,17 +64,6 @@ var LetterProperties = {
 	"x": { index: 89, offset: [-50, 50], anchorOffset: [0, -38], heighCorrection: 0 },
 	"y": { index: 90, offset: [-52, 34], anchorOffset: [0, -50], heighCorrection: 0 },
 	"z": { index: 91, offset: [-50, 49], anchorOffset: [0, -50], heighCorrection: 0 },
-	"0": { index: 17, offset: [-51.3, 61], anchorOffset: [0, -50], heighCorrection: 0 },
-	"1": { index: 18, offset: [-36.5, 62], anchorOffset: [0, -50], heighCorrection: 0 },
-	"2": { index: 19, offset: [-50, 60], anchorOffset: [0, -50], heighCorrection: 0 },
-	"3": { index: 20, offset: [-51, 62], anchorOffset: [0, -50], heighCorrection: 0 },
-	"4": { index: 21, offset: [-55.5, 68.5], anchorOffset: [0, -50], heighCorrection: 0 },
-	"5": { index: 22, offset: [-47.5, 64.5], anchorOffset: [0, -50], heighCorrection: 0 },
-	"6": { index: 23, offset: [-47, 61], anchorOffset: [0, -50], heighCorrection: 0 },
-	"7": { index: 24, offset: [-37, 71.5], anchorOffset: [0, -50], heighCorrection: 0 },
-	"8": { index: 25, offset: [-49.5, 62], anchorOffset: [0, -50], heighCorrection: 0 },
-	"9": { index: 26, offset: [-52.5, 63.5], anchorOffset: [0, -50], heighCorrection: 0 },
-	":": { index: 27, offset: [-26, 48.5], anchorOffset: [0, -50], heighCorrection: 0 }
 }
 
 var PageLinks = [

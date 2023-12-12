@@ -7,7 +7,7 @@ var Vector = Matter.Vector,
 
 // my global variables
 var fontFileName = "menu/Fipps-Regular.otf", Thecanvas, words = [], loaded = false, Myfont;
-var boatImg;
+var boatImg, char_to_font_idx = {};
 var stiffSlider;
 
 function preload() {
@@ -32,10 +32,23 @@ function setup() {
         let li = document.createElement("ol");
         let a = document.createElement("a");
         a.setAttribute('href', "https://" + window.location.hostname + "/" + l.link);
+        a.setAttribute('class', "clickable");
         a.textContent = l.title;
         li.appendChild(a);
         listCont.appendChild(li)
     }
+    let li = document.createElement("ol");
+    let text_input = document.createElement("input");
+    text_input.setAttribute('class', "clickable");
+    text_input.setAttribute('type', "text");
+    text_input.setAttribute('id', "title_changer");
+    text_input.oninput = function () {
+        title = this.value;
+        createTitle(this.value);
+    }
+    text_input.setAttribute('placeholder', "???!?!?!??");
+    li.appendChild(text_input);
+    listCont.appendChild(li)
     //════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
     var elmnt = document.getElementById("menu-container");
     var width = window.innerWidth, height = Math.max(430 + elmnt.offsetHeight, window.innerHeight);
@@ -56,7 +69,14 @@ function setup() {
             showErrorMessage(err.toString());
             return;
         }
-        window.font = font;
+        window.font = font
+        char_to_font_idx = {};
+        for (var i = 0; i < font.glyphs.length; i++) {
+            var glyph = font.glyphs.get(i);
+            if (glyph.unicode !== undefined) {
+                char_to_font_idx[String.fromCharCode(glyph.unicode)] = i;
+            }
+        };
         createTitle("The Weird World of Tex");
         loaded = true;
     });

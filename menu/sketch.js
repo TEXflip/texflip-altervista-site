@@ -1,17 +1,20 @@
 var phrases = [], AllNotStatic = true;
 var sx_old = window.screenX;
 var sy_old = window.screenY;
+var title = "The Weird World of Tex";
 
 function draw() {
     renderMyBackground()
-    Matter.Engine.update(engine, deltaTime);
 
     sx_d = window.screenX - sx_old;
     sy_d = window.screenY - sy_old;
     sx_old = window.screenX;
     sy_old = window.screenY;
-    screen_vec = Vector.create(sx_d*deltaTime, sy_d*deltaTime);
-    
+    screen_vec = Vector.create(sx_d * deltaTime, sy_d * deltaTime);
+    if (Matter.Vector.magnitude(screen_vec) > 1000)
+        screen_vec = Vector.mult(Vector.normalise(screen_vec), 1000);
+
+
     if (loaded) {
         if (Matter.Vector.magnitude(screen_vec) > 1)
             for (const comp of world.composites) {
@@ -25,7 +28,7 @@ function draw() {
 
 function windowResized() {
     resizeCanvas(window.innerWidth, window.innerHeight);
-    createTitle("The Weird World of Tex");
+    createTitle(title);
 }
 
 
@@ -39,19 +42,19 @@ function createTitle(string) {
         fontSize = maxWidth / (string.length + 2);
         baseX = (width - fontSize * (string.length - 1)) / 2;
     }
-    if (words.length == 0)
-        for (let i = 0; i < string.length; i++) {
-            if (string[i] == ' ')
-                continue;
+    let c = 0;
+    for (let i = 0; i < string.length; i++) {
+        if (string[i] == ' ')
+            continue;
+        if (words.length > c)
+            words[c].change(baseX + fontSize * i, 100, string[i], fontSize);
+        else
             words.push(new Word2(baseX + fontSize * i, 100, string[i], fontSize, false));
-        }
-    else
-        for (let i = 0, c = 0; i < string.length; i++) {
-            if (string[i] == ' ')
-                continue;
-            words[c].changePos(baseX + fontSize * i, 100, fontSize);
-            c++
-        }
+        c++;
+    }
+    while (words.length > c) {
+        words.pop().del();
+    }
 }
 
 function computeWave(i, f) {
@@ -135,9 +138,10 @@ class Word2 {
         Matter.World.remove(world, this.composite);
     }
 
-    changePos(x, y, fontDimension) {
+    change(x, y, char, fontDimension) {
         this.x = x;
         this.y = y;
+        this.char = char;
         this.fontDimension = fontDimension;
         this.updateProps();
         let bcopy = this.body;
@@ -158,16 +162,24 @@ class Word2 {
     }
 
     updateProps() {
-        this.Xoffs = this.LP[this.char].offset[0] * (this.fontDimension / 100);
-        this.Yoffs = this.LP[this.char].offset[1] * (this.fontDimension / 100);
-        this.XanchorOffs = this.LP[this.char].anchorOffset[0] * (this.fontDimension / 100);
-        this.YanchorOffs = this.LP[this.char].anchorOffset[1] * (this.fontDimension / 100);
-        this.heighCorrection = this.LP[this.char].heighCorrection * (this.fontDimension / 100);
+        let char_props = this.LP[this.char];
+        if (char_props == undefined) {
+            char_props = {...this.LP["a"]};
+            char_props.index = char_to_font_idx[this.char];
+            if (char_props.index == undefined)
+                char_props.index = char_to_font_idx["?"];
+        }
+        this.Xoffs = char_props.offset[0] * (this.fontDimension / 100);
+        this.Yoffs = char_props.offset[1] * (this.fontDimension / 100);
+        this.XanchorOffs = char_props.anchorOffset[0] * (this.fontDimension / 100);
+        this.YanchorOffs = char_props.anchorOffset[1] * (this.fontDimension / 100);
+        this.heighCorrection = char_props.heighCorrection * (this.fontDimension / 100);
 
         this.ropePos = { x: this.x, y: this.y - this.Yoffs + this.YanchorOffs + this.heighCorrection + (this.fontDimension * 1.667 - 83.333) };
-        this.V = Matter.Vertices.fromPath(displayGlyphData(this.LP[this.char].index, this.fontDimension));
+        this.V = Matter.Vertices.fromPath(displayGlyphData(char_props.index, this.fontDimension));
 
-        this.length = this.fontDimension * 2.667 - 33.3;
+        // this.length = this.fontDimension * 2.667 - 33.3;
+        this.length = this.fontDimension + 45;
     }
 
     show() {
