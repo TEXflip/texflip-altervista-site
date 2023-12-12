@@ -16,6 +16,7 @@ function preload() {
 }
 
 function setup() {
+    frameRate(60);
     // Stiffness slider creation ══════════════════════════════════════════════════════════════════════════════════════════════════
     stiffSlider = createSlider(0, 100, 66);
     stiffSlider.style('transform: rotate(-90deg); position: absolute; width: 200px; left: -95px; top: 100px;');

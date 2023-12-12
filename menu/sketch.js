@@ -1,9 +1,22 @@
 var phrases = [], AllNotStatic = true;
+var sx_old = window.screenX;
+var sy_old = window.screenY;
 
 function draw() {
     renderMyBackground()
-    Matter.Engine.update(engine, 16.666);
+    Matter.Engine.update(engine, deltaTime);
+
+    sx_d = window.screenX - sx_old;
+    sy_d = window.screenY - sy_old;
+    sx_old = window.screenX;
+    sy_old = window.screenY;
+    screen_vec = Vector.create(sx_d*deltaTime, sy_d*deltaTime);
+    
     if (loaded) {
+        if (Matter.Vector.magnitude(screen_vec) > 1)
+            for (const comp of world.composites) {
+                Matter.Body.applyForce(comp.bodies[0], comp.bodies[0].position, Vector.mult(screen_vec, -0.000013))
+            }
         for (var i = 0; i < words.length; i++) {
             words[i].show();
         }
