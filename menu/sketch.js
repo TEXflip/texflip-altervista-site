@@ -15,7 +15,6 @@ function draw() {
     if (Matter.Vector.magnitude(screen_vec) > 1000)
         screen_vec = Vector.mult(Vector.normalise(screen_vec), 1000);
 
-
     if (loaded) {
         if (Matter.Vector.magnitude(screen_vec) > 1)
             for (const comp of world.composites) {
@@ -104,22 +103,19 @@ class Word2 {
         this.x = x;
         this.y = y;
         this.char = char;
-        this.ropeLength = 10;
-        this.IsStatic = IsStatic;
         this.fontDimension = fontDimension;
 
         this.updateProps();
 
         this.option = { collisionFilter: { group: 0, category: 1, mask: -1 }, frictionAir: 0.001, density: 0.0005 };
-        this.body = Matter.Bodies.fromVertices(this.x, this.y, this.V, this.option, true);
+        this.body = Matter.Bodies.fromVertices(this.x, this.ropePos.y + this.length, this.V, this.option, true);
         Matter.Body.setMass(this.body, 0.8);
         Matter.Body.setInertia(this.body, 300);
-        // this.body.mass = 1
 
         this.lastConstraint = MatterSprings.Spring.create({
             pointA: this.ropePos,
             bodyB: this.body,
-            pointB: { x: this.XanchorOffs, y: this.YanchorOffs },
+            pointB: { x: 0, y: this.YanchorOffs },
             length: this.length,
             stiffness: 20,
             damping: 0.2
@@ -154,7 +150,7 @@ class Word2 {
         Matter.Body.setVelocity(this.body, bcopy.velocity);
         this.lastConstraint.length = this.length;
         this.lastConstraint.pointA = this.ropePos;
-        this.lastConstraint.pointB = { x: this.XanchorOffs, y: this.YanchorOffs };
+        this.lastConstraint.pointB = { x: 0, y: this.YanchorOffs };
         this.lastConstraint.bodyB = this.body;
         Matter.Composite.remove(world, this.composite);
         Matter.World.remove(world, this.composite);
@@ -165,19 +161,22 @@ class Word2 {
     updateProps() {
         let char_props = this.LP[this.char];
         if (char_props == undefined) {
-            char_props = {...this.LP["a"]};
+            char_props = { ...this.LP["a"] };
             char_props.index = char_to_font_idx[this.char];
             if (char_props.index == undefined)
                 char_props.index = char_to_font_idx["?"];
         }
-        this.Xoffs = char_props.offset[0] * (this.fontDimension / 100);
-        this.Yoffs = char_props.offset[1] * (this.fontDimension / 100);
-        this.XanchorOffs = char_props.anchorOffset[0] * (this.fontDimension / 100);
-        this.YanchorOffs = char_props.anchorOffset[1] * (this.fontDimension / 100);
-        this.heighCorrection = char_props.heighCorrection * (this.fontDimension / 100);
 
-        this.ropePos = { x: this.x, y: this.y - this.Yoffs + this.YanchorOffs + this.heighCorrection + (this.fontDimension * 1.667 - 83.333) };
         this.V = Matter.Vertices.fromPath(displayGlyphData(char_props.index, this.fontDimension));
+        this.mass_center = Matter.Vertices.centre(this.V);
+        for (let i = 0; i < this.V.length; i++) {
+            let are_intersecting = intersects(this.V[i].x, this.V[i].y, this.V[(i + 1) % this.V.length].x, this.V[(i + 1) % this.V.length].y, this.mass_center.x, this.mass_center.y, this.mass_center.x, this.mass_center.y - 1000);
+            if (are_intersecting) {
+                this.YanchorOffs = this.V[i].y - this.mass_center.y;
+                break;
+            }
+        }
+        this.ropePos = { x: this.x, y: this.y + this.mass_center.y + this.YanchorOffs + (this.fontDimension * 1.667 - 83.333) };
 
         // this.length = this.fontDimension * 2.667 - 33.3;
         this.length = this.fontDimension + 45;
@@ -201,7 +200,12 @@ class Word2 {
         translate(pos.x, pos.y);
         rotate(angle);
         textSize(this.fontDimension);
-        text(this.char, this.Xoffs, this.Yoffs);
+        text(this.char, -this.mass_center.x, -this.mass_center.y);
+        // fill(255);
+        // textSize(8);
+        // for (let i = 0; i < this.V.length; i++) {
+        //     text(i, this.V[i].x - this.mass_center.x, this.V[i].y - this.mass_center.y);
+        // }
         pop();
 
         // Rendering the spring
@@ -243,6 +247,19 @@ class Word2 {
         return (pos.x < -50 || pos.x > window.innerWidth + 50 || pos.y > window.innerHeight + 50);
     }
 }
+
+function intersects(a,b,c,d,p,q,r,s) {
+    var det, gamma, lambda;
+    det = (c - a) * (s - q) - (r - p) * (d - b);
+    if (det === 0) {
+      return false;
+    } else {
+      lambda = ((s - q) * (r - a) + (p - r) * (s - b)) / det;
+      gamma = ((b - d) * (r - a) + (c - a) * (s - b)) / det;
+      return (0 < lambda && lambda < 1) && (0 < gamma && gamma < 1);
+    }
+  };
+
 
 class Word {
     constructor(x, y, char, fontDimension, IsStatic = false) {

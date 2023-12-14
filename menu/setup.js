@@ -121,7 +121,7 @@ function setup() {
 
     // engine.world.gravity.y = 0;
     Matter.Engine.run(engine);
-    // Render.run(render);
+    // Matter.Render.run(render);
 
     var mouse = Matter.Mouse.create(Thecanvas),
         mouseConstraint = Matter.MouseConstraint.create(engine, {
