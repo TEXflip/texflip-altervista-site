@@ -1,7 +1,6 @@
 var phrases = [], AllNotStatic = true;
 var sx_old = window.screenX;
 var sy_old = window.screenY;
-var title = "The Weird World of Tex";
 document.title = title;
 
 function draw() {
@@ -15,14 +14,12 @@ function draw() {
     if (Matter.Vector.magnitude(screen_vec) > 1000)
         screen_vec = Vector.mult(Vector.normalise(screen_vec), 1000);
 
-    if (loaded) {
-        if (Matter.Vector.magnitude(screen_vec) > 1)
-            for (const comp of world.composites) {
-                Matter.Body.applyForce(comp.bodies[0], comp.bodies[0].position, Vector.mult(screen_vec, -0.000013))
-            }
-        for (var i = 0; i < words.length; i++) {
-            words[i].show();
+    if (Matter.Vector.magnitude(screen_vec) > 1)
+        for (const comp of world.composites) {
+            Matter.Body.applyForce(comp.bodies[0], comp.bodies[0].position, Vector.mult(screen_vec, -0.000013))
         }
+    for (var i = 0; i < words.length; i++) {
+        words[i].show();
     }
 }
 
@@ -49,7 +46,7 @@ function createTitle(string) {
         if (words.length > c)
             words[c].change(baseX + fontSize * i, 100, string[i], fontSize);
         else
-            words.push(new Word2(baseX + fontSize * i, 100, string[i], fontSize, false));
+            words.push(new PhysicChar(baseX + fontSize * i, 100, string[i], fontSize, false));
         c++;
     }
     while (words.length > c) {
@@ -96,8 +93,7 @@ function renderMyBackground() {
     fill(30);
 }
 
-class Word2 {
-    LP = LetterProperties;
+class PhysicChar {
 
     constructor(x, y, char, fontDimension, IsStatic = false) {
         this.x = x;
@@ -159,15 +155,12 @@ class Word2 {
     }
 
     updateProps() {
-        let char_props = this.LP[this.char];
-        if (char_props == undefined) {
-            char_props = { ...this.LP["a"] };
-            char_props.index = char_to_font_idx[this.char];
-            if (char_props.index == undefined)
-                char_props.index = char_to_font_idx["?"];
-        }
+        let char_index = char_to_font_idx[this.char];
+        if (char_index == undefined)
+            char_index = char_to_font_idx["?"];
 
-        this.V = Matter.Vertices.fromPath(displayGlyphData(char_props.index, this.fontDimension));
+        const path = glyphToMatterPath(char_index, this.fontDimension)
+        this.V = Matter.Vertices.fromPath(path);
         this.mass_center = Matter.Vertices.centre(this.V);
         for (let i = 0; i < this.V.length; i++) {
             let are_intersecting = intersects(this.V[i].x, this.V[i].y, this.V[(i + 1) % this.V.length].x, this.V[(i + 1) % this.V.length].y, this.mass_center.x, this.mass_center.y, this.mass_center.x, this.mass_center.y - 1000);
@@ -259,118 +252,3 @@ function intersects(a,b,c,d,p,q,r,s) {
       return (0 < lambda && lambda < 1) && (0 < gamma && gamma < 1);
     }
   };
-
-
-class Word {
-    constructor(x, y, char, fontDimension, IsStatic = false) {
-        let LP = LetterProperties;
-
-        this.ropeLength = 10;
-        this.fontDimension = fontDimension;
-        this.IsStatic = IsStatic;
-
-        this.Xoffs = LP[char].offset[0] * (fontDimension / 100);
-        this.Yoffs = LP[char].offset[1] * (fontDimension / 100);
-        this.XanchorOffs = LP[char].anchorOffset[0] * (fontDimension / 100);
-        this.YanchorOffs = LP[char].anchorOffset[1] * (fontDimension / 100);
-        this.heighCorrection = LP[char].heighCorrection * (fontDimension / 100);
-
-        this.ropePos = { x: x, y: y - this.Yoffs + this.YanchorOffs + this.heighCorrection };
-        this.char = char;
-        this.V = Matter.Vertices.fromPath(displayGlyphData(LP[char].index, this.fontDimension));
-        let option = { collisionFilter: { group: 0, category: 1, mask: -1 }, frictionAir: 0.0005, density: 0.0001 };
-        this.body = Matter.Bodies.fromVertices(x, y, this.V, option, true);
-
-        var radius = this.radius = 3;
-        var damp = 0., stiff = 0.1;
-        this.rope = Matter.Composites.stack(this.ropePos.x, this.ropePos.y, 1, 1, 10, 10, function (x, y) {
-            return Matter.Bodies.circle(x, y, radius, { collisionFilter: { group: -1, category: 2, mask: 0 } });
-        });
-        Matter.Composites.chain(this.rope, 0.5, 0, -0.5, 0, { stiffness: stiff, damping: damp, length: 2, render: { type: 'line' }, density: 0.0, frictionAir: 0.0 });
-
-        this.composite = Matter.Composite.addConstraint(this.rope, Constraint.create({
-            pointA: this.ropePos,
-            bodyB: this.rope.bodies[0],
-            pointB: { x: -this.radius, y: 0 },
-            length: this.ropeLength,
-            stiffness: stiff,
-            damping: damp
-        }))
-
-        this.lastConstraint = Constraint.create({
-            pointA: { x: this.radius, y: 0 },
-            bodyA: this.rope.bodies[this.rope.bodies.length - 1],
-            bodyB: this.body,
-            pointB: { x: this.XanchorOffs, y: this.YanchorOffs },
-            length: this.ropeLength,
-            stiffness: stiff,
-            damping: damp
-        });
-        this.composite = Matter.Composite.add(this.composite, [this.body, this.lastConstraint])
-        Matter.World.add(world, this.composite)
-        this.body.isStatic = IsStatic;
-    }
-
-    show() {
-        // Rendering The Char
-        var pos = this.body.position;
-        var angle = this.body.angle;
-        push();
-        translate(pos.x, pos.y);
-        rotate(angle);
-        textSize(this.fontDimension);
-        text(this.char, this.Xoffs, this.Yoffs);
-        pop();
-
-        // Rendering the spring
-        fill(120)
-        circle(this.ropePos.x, this.ropePos.y, 8);
-        noFill();
-        stroke(100);
-        strokeWeight(3);
-        beginShape();
-        curveVertex(this.ropePos.x, this.ropePos.y)
-        curveVertex(this.ropePos.x, this.ropePos.y)
-        let prec = { x: this.ropePos.x, y: this.ropePos.y };
-        let l = this.rope.bodies.length;
-        let nDiv = 6
-        for (let i = 0; i < l - 1; i++) {
-            const Bpos = this.rope.bodies[i].position;
-            let off = Vmin(Bpos, prec)
-            let perp = perpendicular(off);
-
-            let s = Vdiv(off, nDiv)
-            for (let j = i == 0 ? 1 : 0; j < nDiv; j++) {
-                let sign = j % 2 == 0 ? 1 : -1;
-                let out = Vsum(Vmult(s, j), Vmult(perp, sign * 4));
-                out = Vsum(out, prec);
-                curveVertex(out.x, out.y);
-            }
-
-            prec = { x: Bpos.x, y: Bpos.y };
-        }
-        let final = { x: pos.x + this.lastConstraint.pointB.x, y: pos.y + this.lastConstraint.pointB.y };
-        let off = Vmin(prec, final)
-        let perp = perpendicular(off);
-
-        let s = Vdiv(off, nDiv)
-        for (let j = 0; j <= nDiv; j++) {
-            let sign = j % 2 == 1 ? 1 : -1;
-            let out = Vsum(Vmult(s, -j), Vmult(perp, sign * 4));
-            out = Vsum(out, prec);
-            curveVertex(out.x, out.y);
-        }
-        curveVertex(final.x, final.y);
-        endShape();
-        fill(120);
-        noStroke();
-        strokeWeight(0);
-        circle(final.x, final.y, 7);
-        fill(0);
-    }
-
-    isOffScreen() {
-        var pos = this.body.position;
-        return (pos.x < -50 || pos.x > window.innerWidth + 50 || pos.y > window.innerHeight + 50);
-    }
-}

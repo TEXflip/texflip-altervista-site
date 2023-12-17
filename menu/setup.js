@@ -1,4 +1,4 @@
-// Matter js Variables
+// Matter.js Variables
 Matter.use('matter-springs');
 var Vector = Matter.Vector,
     render,
@@ -6,17 +6,40 @@ var Vector = Matter.Vector,
     engine;
 
 // my global variables
-var fontFileName = "menu/Fipps-Regular.otf", Thecanvas, words = [], loaded = false, Myfont;
-var boatImg, char_to_font_idx = {};
-var stiffSlider;
+var title = "The Weird World of Tex",
+    char_to_font_idx = {}, 
+    stiffSlider, 
+    words = [], 
+    Thecanvas, 
+    boatImg, 
+    p5Font;
 
 function preload() {
-    Myfont = loadFont(fontFileName);
+    const fontFileName = "menu/Fipps-Regular.otf";
+    p5Font = loadFont(fontFileName);
     boatImg = loadImage('menu/sprites/boat.png');
+    opentype.load(fontFileName, function (err, font) {
+        if (err) {
+            console.log("font not loaded");
+            showErrorMessage(err.toString());
+            return;
+        }
+        window.font = font
+        for (var i = 0; i < font.glyphs.length; i++) {
+            const glyph = font.glyphs.get(i);
+            if (glyph.unicode !== undefined) {
+                char_to_font_idx[String.fromCharCode(glyph.unicode)] = i;
+            }
+        };
+    });
 }
 
 function setup() {
     frameRate(60);
+    textFont(p5Font);
+    imageMode(CENTER);
+    strokeJoin(ROUND);
+    strokeCap(ROUND);
     // Stiffness slider creation ══════════════════════════════════════════════════════════════════════════════════════════════════
     stiffSlider = createSlider(0, 100, 66);
     stiffSlider.style('transform: rotate(-90deg); position: absolute; width: 200px; left: -95px; top: 100px;');
@@ -56,35 +79,11 @@ function setup() {
     //════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
     var elmnt = document.getElementById("menu-container");
     var width = window.innerWidth, height = Math.max(430 + elmnt.offsetHeight, window.innerHeight);
-    let canv = createCanvas(width, height);
+    let canv = createCanvas(width, height, P2D);
     canv.parent("canvas-container");
 
     engine = Matter.Engine.create();
     world = engine.world;
-
-    imageMode(CENTER);
-    strokeJoin(ROUND);
-    strokeCap(ROUND);
-
-    opentype.load(fontFileName, function (err, font) {
-        var amount, glyph, x, y, fontSize;
-        if (err) {
-            console.log("font not loaded");
-            showErrorMessage(err.toString());
-            return;
-        }
-        window.font = font
-        char_to_font_idx = {};
-        for (var i = 0; i < font.glyphs.length; i++) {
-            var glyph = font.glyphs.get(i);
-            if (glyph.unicode !== undefined) {
-                char_to_font_idx[String.fromCharCode(glyph.unicode)] = i;
-            }
-        };
-        createTitle("The Weird World of Tex");
-        loaded = true;
-    });
-    textFont(Myfont);
 
     Matter.World.add(world, Matter.Bodies.rectangle(width / 2, height + 50, width + 1000, 100, { isStatic: true }));
     var lastScrollY = document.body.scrollTop;
@@ -132,4 +131,29 @@ function setup() {
         });
 
     Matter.Composite.add(world, mouseConstraint);
+    createTitle(title);
+}
+
+function glyphToMatterPath(glyphIndex, fontDimension) {
+    var glyph = font.glyphs.get(glyphIndex);
+    var charPath = "";
+    if (glyph.numberOfContours > 0) {
+
+    } else if (glyph.isComposite) {
+
+    } else if (glyph.path) {
+        var isM = false;
+        for (i in glyph.path.commands) {
+            if (glyph.path.commands[i].type == "M") {
+                isM = true;
+                charPath = "";
+            }
+            else if (glyph.path.commands[i].type == "Z")
+                isM = false;
+            if (isM)
+                charPath += glyph.path.commands[i].x * (fontDimension*0.001) + " " + -glyph.path.commands[i].y * (fontDimension*0.001) + " ";
+        }
+        //charPath += glyph.path.commands.map(pathCommandToString).join('');
+    }
+    return charPath;
 }
