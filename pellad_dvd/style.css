@@ -1,0 +1,14 @@
+body {
+    padding: 0;
+    margin: 0;
+    font-family: "04B_30";
+    background-color: #909090; 
+}
+
+main {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
