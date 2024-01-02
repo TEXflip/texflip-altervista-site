@@ -1,8 +1,7 @@
 let dim = 4,
 	mode = 0,
 	time = 0,
-	queueMode = true,
-	queueModeCreator = false,
+	queueModeCreator = true,
 	steps_per_frame = 50;
 	dim_selection = [4, 8, 16, 32, 64, 128, 256]
 
@@ -27,7 +26,7 @@ function draw() {
 					info("Finding exit");
 					info_el.style.opacity = 100;
 					mode = 1;
-					exit_finder = new Dijkstra(maze_builder.curr, maze_builder.mat, xMat, yMat, maze_builder.cell_size);
+					exit_finder = new Dijkstra(maze_builder.start, maze_builder.mat, xMat, yMat, maze_builder.cell_size);
 					break;
 				}
 			break;
@@ -100,8 +99,9 @@ class MazeBuilder {
 	constructor(xDim, yDim, cell_size) {
 		let x = parseInt(xDim * 0.5);
 		let y = parseInt(yDim * 0.5);
-		this.curr = new Vect(x, y);
-		this.prev = new Vect(x, y);
+		this.start = new Vect(x, y);
+		this.curr = this.start.copy();
+		this.prev = this.start.copy();
 		this.size = new Vect(xDim, yDim);
 		this.cell_size = cell_size;
 		this.stack = [this.curr.copy()];
