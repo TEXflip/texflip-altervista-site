@@ -1,7 +1,7 @@
 let dim = 4,
 	mode = 0,
 	time = 0,
-	queueModeCreator = true,
+	queueModeCreator = false,
 	steps_per_frame = 50;
 	dim_selection = [4, 8, 16, 32, 64, 128, 256]
 
