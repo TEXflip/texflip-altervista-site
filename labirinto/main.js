@@ -17,7 +17,8 @@ function setup() {
 }
 
 function draw() {
-	translate(1, 1);
+	let cs = maze_builder.cell_size;
+	translate(Math.round((width - ((xMat-1) * cs + 1))*0.5), Math.round((height - ((yMat-1) * cs + 1))*0.5));
 	switch (mode) {
 		case 0:
 			for (let i = 0; i < steps_per_frame; i++)
@@ -25,7 +26,7 @@ function draw() {
 					info("Finding exit");
 					info_el.style.opacity = 100;
 					mode = 1;
-					exit_finder = new Dijkstra(maze_builder.start, maze_builder.mat, xMat, yMat, maze_builder.cell_size);
+					exit_finder = new Dijkstra(maze_builder.start, maze_builder.mat, xMat, yMat, cs);
 					break;
 				}
 			break;
@@ -88,8 +89,8 @@ function reset() {
 	info("Maze Building");
 	info_el.style.opacity = 100;
 	mode = 0;
-	xMat = parseInt(width / dim) + 1;
-	yMat = parseInt(height / dim) + 1;
+	xMat = parseInt((width - 2) / dim) + 1;
+	yMat = parseInt((height - 2) / dim) + 1;
 	maze_builder = new MazeBuilder(xMat, yMat, dim);
 	// walls
 	background(255);
