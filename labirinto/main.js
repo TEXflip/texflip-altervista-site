@@ -2,16 +2,15 @@ let dim = 4,
 	mode = 0,
 	time = 0,
 	queueModeCreator = false,
-	steps_per_frame = 50;
+	steps_per_frame = 100;
+	fps = 60;
+	wheel_value = steps_per_frame;
 	dim_selection = [4, 8, 16, 32, 64, 128, 256]
 
 let maze_builder, exit_finder, interval, info_el;
 
 function setup() {
-	frameRate(60);
-	canvas_width = parseInt(window.innerWidth / dim) * dim - 1;
-	canvas_height = parseInt(window.innerHeight / dim) * dim - 1;
-	createCanvas(canvas_width, canvas_height);
+	createCanvas(window.innerWidth, window.innerHeight);
 	strokeWeight(2);
 	info_el = document.getElementById("info")
 	reset();
@@ -49,10 +48,20 @@ function draw() {
 }
 
 function mouseWheel(event) {
-	steps_per_frame = event.delta < 0 ? steps_per_frame * 1.2 : steps_per_frame / 1.2;
-	if (steps_per_frame < 1) steps_per_frame = 1;
-	if (steps_per_frame > 1e6) steps_per_frame = 1e6;
-	info("Steps per frame: " + steps_per_frame.toFixed(0));
+	wheel_value = event.delta < 0 ? wheel_value * 1.2 : wheel_value / 1.2;
+	if (wheel_value <= 1) {
+		if (wheel_value < 0.01)
+			wheel_value = 0.01;
+		steps_per_frame = 1;
+		maze_builder.draw_progress_step = Math.pow(32, wheel_value - 1);
+		fps = wheel_value * 60;
+	} 
+	else{
+		steps_per_frame = wheel_value;
+		maze_builder.draw_progress_step = 1;
+	}
+	if (wheel_value > 1e6) wheel_value = 1e6;
+	info("speed: " + wheel_value.toFixed(wheel_value < 1 ? 2 : wheel_value < 10 ? 1 : 0));
 }
 
 function keyPressed() {
@@ -88,6 +97,7 @@ function reset() {
 	noStroke();
 	// rect(-dim * 0.5, -dim * 0.5, width, dim * 0.5 - 1);
 	stroke(0);
+	frameRate(60);
 }
 
 function info(msg) {
@@ -213,12 +223,15 @@ class Dijkstra {
 
 		this.draw_mode = false;
 		this.draw_source = new Vect(this.piv.x * this.cell_size + this.cell_size / 2, this.piv.y * this.cell_size + this.cell_size / 2);
+		this.end_line_step = 0.1;
 	}
 	next() {
+		frameRate(fps)
 		let u = this.stack.shift();
 		let uxy = this.i_to_xy(u);
 		if (this.is_exit(uxy.x, uxy.y)) {
 			this.active = false;
+			frameRate(60);
 			fill(255, 0, 0);
 			rect(uxy.x * this.cell_size + 1, uxy.y * this.cell_size + 1, this.cell_size - 2, this.cell_size - 2);
 			let temp = u;
@@ -252,9 +265,9 @@ class Dijkstra {
 		if (this.draw_mode) {
 			let dx = this.draw_target.x - this.draw_source.x;
 			let dy = this.draw_target.y - this.draw_source.y;
-			line(this.p.x, this.p.y, this.p.x + dx * 0.1, this.p.y + dy * 0.1);
-			this.p.x += dx * 0.1;
-			this.p.y += dy * 0.1;
+			line(this.p.x, this.p.y, this.p.x + dx * this.end_line_step, this.p.y + dy * this.end_line_step);
+			this.p.x += dx * this.end_line_step;
+			this.p.y += dy * this.end_line_step;
 			let d = dist(this.p.x, this.p.y, this.draw_target.x, this.draw_target.y);
 			if (d < 0.01) {
 				this.draw_mode = false;
