@@ -3,7 +3,7 @@ var PageLinks = [
 	{ title: "Julia Set", link: "JuliaSet" },
 	{ title: "Snek The Snak", link: "Snek_The_Snak" },
 	// { title: "The Reverser", link: "ReverceVoice" },
-	{ title: "Labyrinth", link: "labirinto" },
+	{ title: "Maze Generator", link: "labirinto" },
 	// { title: "Plinko", link: "Plinko" },
 	{ title: "Random Distance Random Unit", link: "RDRU" },
 	// { title: "Music Effect", link: "MusicEffect" },

@@ -59,6 +59,7 @@ class FTPutils:
                 self.download_dir(f"{directory}/{name}")
 
 def deploy(session):
+    breakpoint()
     session.mkdir(dir_remote) # create the dir if not exists
     session.cd(dir_remote) # set the root dir in remote
 
