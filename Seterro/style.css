@@ -1,0 +1,12 @@
+body{
+  margin: 0px;
+  overflow: hidden;
+}
+
+.map-styles_extendedHitboxHidden__PNW0h, .map-styles_hitboxDot__91ZW_, .map-styles_hitboxRiver__Al0N_, .map-styles_labelBox__gTsp5, .map-styles_labelLine__VViQN, .map-styles_transparentAreaOnHover__eVmKk, .map-styles_transparentAreaVisible__MBVVQ {
+  opacity: 0;
+}
+
+.map-styles_hide__BQBkM {
+  opacity: 0
+}
