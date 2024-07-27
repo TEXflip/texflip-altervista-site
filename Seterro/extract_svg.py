@@ -1,10 +1,12 @@
-import cv2
 import json
-import numpy as np
-from pathlib import Path
 from xml.dom import minidom
+from pathlib import Path
 
-from matplotlib import pyplot as plt
+import cv2
+import numpy as np
+from scipy.spatial import Delaunay
+from shapely.geometry import Point, LineString
+from shapely.geometry import Polygon
 
 doc = minidom.parse("worldHigh.svg")
 
@@ -100,21 +102,31 @@ def generate_json(states):
     with open("world.json", "w") as f:
         json.dump(data, f, indent=4)
 
-def generate_obj(states):
-    for state in states:
-        polys = state["polygons"]
-        obj_path = Path("objs")
-        obj_path.mkdir(exist_ok=True)
-        with open(obj_path / f"{state['id']}.obj", "w") as f:
-            for points in polys:
-                points = mercator_inverse(points)
-                points = polar_to_cartesian(points)
-                for p in points:
-                    f.write(f"v {p[0]} {p[1]} {p[2]}\n")
-                f.write("f")
-                for i in range(len(points)):
-                    f.write(f" {i+1}")
-                f.write("\n")
+
+def generate_world_obj(states):
+    obj_path = Path("objs")
+    obj_path.mkdir(exist_ok=True)
+    i = 0
+    with open(Path("objs") / "world.obj", "w") as f:
+        for n, state in enumerate(states):
+            print(f"{n+1}/{N_STATES}: {state['title']:<50}", end="\r")
+            polys = state["polygons"]
+            points = np.concatenate(polys)
+            points = mercator_inverse(points)
+            points = polar_to_cartesian(points)
+            for point in points:
+                f.write(f"v {point[0]} {point[1]} {point[2]}\n")
+            f.write(f"g {state['id']}\n")
+            for poly in polys:
+                tri = Delaunay(poly).simplices
+                obj_tri = 1 + i + tri
+                shapely_poly = Polygon(poly)
+                for t, ot in zip(tri, obj_tri):
+                    tri_center = Polygon(poly[t]).centroid
+                    if not shapely_poly.contains(tri_center):
+                        continue
+                    f.write(f"f {ot[0]} {ot[1]} {ot[2]}\n")
+                i += len(poly)
         
 
 def draw():
@@ -156,6 +168,6 @@ def show():
 
 # generate_json(states)
 # show()
-generate_obj(states)
+generate_world_obj(states)
 
 doc.unlink()
