@@ -78,17 +78,20 @@ def polar_to_cartesian(p, r=1):
 
 
 def rotation_matrix_from_vectors(vec1, vec2):
-    """ Find the rotation matrix that aligns vec1 to vec2
+    """Find the rotation matrix that aligns vec1 to vec2
     :param vec1: A 3d "source" vector
     :param vec2: A 3d "destination" vector
     :return mat: A transform matrix (3x3) which when applied to vec1, aligns it with vec2.
     """
-    a, b = (vec1 / np.linalg.norm(vec1)).reshape(3), (vec2 / np.linalg.norm(vec2)).reshape(3)
+    a, b = (
+        (vec1 / np.linalg.norm(vec1)).reshape(3),
+        (vec2 / np.linalg.norm(vec2)).reshape(3),
+    )
     v = np.cross(a, b)
     c = np.dot(a, b)
     s = np.linalg.norm(v)
     kmat = np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
-    rotation_matrix = np.eye(3) + kmat + kmat.dot(kmat) * ((1 - c) / (s ** 2))
+    rotation_matrix = np.eye(3) + kmat + kmat.dot(kmat) * ((1 - c) / (s**2))
     return rotation_matrix
 
 
@@ -141,7 +144,6 @@ def generate_world_obj(states, export_states=False):
         states_path = obj_path / "states"
         states_path.mkdir(exist_ok=True)
     obj_path.mkdir(exist_ok=True)
-    obj_file = open(obj_path / "world.obj", "w")
 
     # Generate vertices
     points = np.concatenate([np.concatenate(state["polygons"]) for state in states])
@@ -159,11 +161,15 @@ def generate_world_obj(states, export_states=False):
         states[n]["faces"] = []
         for poly in polys:
             points_3d_poly = points[i : i + len(poly)]
+            if state["id"] == "LS":
+                points[i : i + len(poly)] *= 1.002
             center = np.mean(points_3d_poly, axis=0)
             R = rotation_matrix_from_vectors(center, np.array([1, 0, 0]))
             points_rotated = (R @ points_3d_poly.T).T
             if export_states:
-                state_points.append(np.append(points_3d_poly, points_rotated * 1.2, axis=0))
+                state_points.append(
+                    np.append(points_3d_poly, points_rotated * 1.2, axis=0)
+                )
             points_proj = points_rotated[:, 1:]
             shap_poly = Polygon(points_proj)
             if shap_poly.area >= 0.04:
@@ -177,7 +183,7 @@ def generate_world_obj(states, export_states=False):
             mask = [shap_poly.contains(center) for center in tri_centers]
             obj_str = "\n".join(
                 [
-                    f"f {t[0]+1+i}//{t[0]+1+i} {t[1]+1+i}//{t[1]+1+i} {t[2]+1+i}//{t[2]+1+i}"
+                    f"f {t[0]+1+i}/{n}/{t[0]+1+i} {t[1]+1+i}/{n}/{t[1]+1+i} {t[2]+1+i}/{n}/{t[2]+1+i}"
                     for t, m in zip(poly_tri, mask)
                     if m
                 ]
@@ -187,28 +193,43 @@ def generate_world_obj(states, export_states=False):
         if export_states:
             with open(states_path / f"{state['id']}.obj", "w") as f:
                 state_points_str = "\n".join(
-                    [f"v {point[0]} {point[1]} {point[2]}" for point in np.concatenate(state_points)]
+                    [
+                        f"v {point[0]} {point[1]} {point[2]}"
+                        for point in np.concatenate(state_points)
+                    ]
                 )
                 f.write(state_points_str + "\n")
 
     points_str_obj = "\n".join(
         [f"v {point[0]} {point[1]} {point[2]}" for point in points]
     )
+    # Generate normals
     normalized_points = points / np.linalg.norm(points, axis=1)[:, None]
     normals_str_obj = "\n".join(
         [f"vn {point[0]} {point[1]} {point[2]}" for point in normalized_points]
     )
-    obj_file.write(points_str_obj + "\n")
-    obj_file.write(normals_str_obj + "\n")
-    for state in states:
-        obj_file.write(f"g {state['id']} {state['title']}\n")
-        # obj_file.write(f"usemtl {state['id']}\n")
-        for face in state["faces"]:
-            obj_file.write(face + "\n")
+    # Generate uv map
+    s = (16, 17)
+    uv = np.meshgrid(np.linspace(0, s[1]-1, s[1]), np.linspace(0, s[0]-1, s[0]))
+    uv = np.stack([uv[1].flatten(), uv[0].flatten()], axis=1)
+    uv += 0.5
+    uv /= s[::-1]
+    uv_str_obj = "\n".join([f"vt {u} {v}" for u, v in uv[:len(states)]])
+
+    with open(obj_path / "world.obj", "w") as obj_file:
+        obj_file.write(points_str_obj + "\n")
+        obj_file.write(uv_str_obj + "\n")
+        obj_file.write(normals_str_obj + "\n")
+        for state in states:
+            obj_file.write(f"g {state['id']} {state['title']}\n")
+            # obj_file.write(f"usemtl {state['id']}\n")
+            for face in state["faces"]:
+                obj_file.write(face + "\n")
 
     profiler.disable()
     print("Number of vertices:", i)
-    obj_file.close()
+    print("Number of faces:", sum([len(state["faces"]) for state in states]))
+    print("Number of states:", len(states))
 
     profiler.dump_stats("profiling.prof")
 
