@@ -7,9 +7,19 @@ from cProfile import Profile
 import numpy as np
 from scipy.spatial import Delaunay
 from shapely.geometry import Polygon
-from shapely.strtree import STRtree
 
 doc = minidom.parse("worldHigh.svg")
+
+MATERIAL_TEMPL = """
+newmtl {0}
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Kd {1} {2} {3}
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2"""
 
 # {'M': 1643, 'Z': 1643, 'V': 346, 'L': 637, 'H': 325}
 N_STATES = len(doc.getElementsByTagName("path"))
@@ -67,26 +77,44 @@ def polar_to_cartesian(p, r=1):
     return np.stack([x, y, z], axis=1)
 
 
-def rotate(p, dx, dy, dz):
-    x = p[:, 0]
-    y = p[:, 1]
-    z = p[:, 2]
-    x2 = x * np.cos(dz) - y * np.sin(dz)
-    y2 = x * np.sin(dz) + y * np.cos(dz)
-    z2 = z
-    x = x2
-    y = y2
-    z = z2
-    x2 = x * np.cos(dy) - z * np.sin(dy)
-    y2 = y
-    z2 = x * np.sin(dy) + z * np.cos(dy)
-    x = x2
-    y = y2
-    z = z2
-    x2 = x
-    y2 = y * np.cos(dx) - z * np.sin(dx)
-    z2 = y * np.sin(dx) + z * np.cos(dx)
-    return np.stack([x2, y2, z2], axis=1)
+def rotation_matrix_from_vectors(vec1, vec2):
+    """ Find the rotation matrix that aligns vec1 to vec2
+    :param vec1: A 3d "source" vector
+    :param vec2: A 3d "destination" vector
+    :return mat: A transform matrix (3x3) which when applied to vec1, aligns it with vec2.
+    """
+    a, b = (vec1 / np.linalg.norm(vec1)).reshape(3), (vec2 / np.linalg.norm(vec2)).reshape(3)
+    v = np.cross(a, b)
+    c = np.dot(a, b)
+    s = np.linalg.norm(v)
+    kmat = np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
+    rotation_matrix = np.eye(3) + kmat + kmat.dot(kmat) * ((1 - c) / (s ** 2))
+    return rotation_matrix
+
+
+def R_from_angles(th_x, th_y, th_z):
+    Rx = np.array(
+        [
+            [1, 0, 0],
+            [0, np.cos(th_x), -np.sin(th_x)],
+            [0, np.sin(th_x), np.cos(th_x)],
+        ]
+    )
+    Ry = np.array(
+        [
+            [np.cos(th_y), 0, np.sin(th_y)],
+            [0, 1, 0],
+            [-np.sin(th_y), 0, np.cos(th_y)],
+        ]
+    )
+    Rz = np.array(
+        [
+            [np.cos(th_z), -np.sin(th_z), 0],
+            [np.sin(th_z), np.cos(th_z), 0],
+            [0, 0, 1],
+        ]
+    )
+    return Rz @ Ry @ Rx
 
 
 def generate_json(states):
@@ -107,44 +135,18 @@ def generate_json(states):
         json.dump(data, f, indent=4)
 
 
-def generate_world_obj(states):
-    material_tmpl = """
-newmtl {0}
-Ns 0.000000
-Ka 1.000000 1.000000 1.000000
-Kd {1} {2} {3}
-Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.000000
-d 1.000000
-illum 2"""
+def generate_world_obj(states, export_states=False):
     obj_path = Path("objs")
+    if export_states:
+        states_path = obj_path / "states"
+        states_path.mkdir(exist_ok=True)
     obj_path.mkdir(exist_ok=True)
     obj_file = open(obj_path / "world.obj", "w")
-    obj_file.write("mtllib world.mtl\n")
 
     # Generate vertices
-    points = [np.concatenate(state["polygons"]) for state in states]
-    points = np.concatenate(points)
+    points = np.concatenate([np.concatenate(state["polygons"]) for state in states])
     points = mercator_inverse(points)
     points = polar_to_cartesian(points)
-    points_str_obj = "\n".join(
-        [f"v {point[0]} {point[1]} {point[2]}" for point in points]
-    )
-    normalized_points = -points / np.linalg.norm(points, axis=1)[:, None]
-    normals_str_obj = "\n".join(
-        [f"vn {point[0]} {point[1]} {point[2]}" for point in normalized_points]
-    )
-    obj_file.write(points_str_obj + "\n")
-    obj_file.write(normals_str_obj + "\n")
-    material_str_obj = "\n".join(
-        [
-            material_tmpl.format(state["id"], *hsv_to_rgb(n / N_STATES, 1, 1))
-            for n, state in enumerate(states)
-        ]
-    )
-    with open(obj_path / "world.mtl", "w") as mtl_file:
-        mtl_file.write(material_str_obj)
 
     profiler = Profile()
     profiler.enable()
@@ -152,19 +154,57 @@ illum 2"""
     # Generate faces
     for n, state in enumerate(states):
         print(f"{n+1}/{N_STATES}: {state['title']:<50}", end="\r")
-        obj_file.write(f"g {state['id']} {state['title']}\n")
-        obj_file.write(f"usemtl {state['id']}\n")
         polys = state["polygons"]
-        poly_tri = [Delaunay(poly).simplices for poly in polys]
-        shapely_poly = [Polygon(poly) for poly in polys]
-        for tri, poly, shapely_poly in zip(poly_tri, polys, shapely_poly):
-            tri_center = [Polygon(poly[t]).centroid for t in tri]
-            mask = [shapely_poly.contains(center) for center in tri_center]
+        state_points = []
+        states[n]["faces"] = []
+        for poly in polys:
+            points_3d_poly = points[i : i + len(poly)]
+            center = np.mean(points_3d_poly, axis=0)
+            R = rotation_matrix_from_vectors(center, np.array([1, 0, 0]))
+            points_rotated = (R @ points_3d_poly.T).T
+            if export_states:
+                state_points.append(np.append(points_3d_poly, points_rotated * 1.2, axis=0))
+            points_proj = points_rotated[:, 1:]
+            shap_poly = Polygon(points_proj)
+            if shap_poly.area >= 0.04:
+                _c = shap_poly.centroid
+                center = R.T @ np.array([1, _c.x, _c.y])
+                c_norm = np.linalg.norm(center)
+                points = np.insert(points, i, center / c_norm, axis=0)
+                points_proj = np.insert(points_proj, 0, [_c.x, _c.y], axis=0)
+            poly_tri = Delaunay(points_proj).simplices
+            tri_centers = [Polygon(points_proj[t]).centroid for t in poly_tri]
+            mask = [shap_poly.contains(center) for center in tri_centers]
             obj_str = "\n".join(
-                [f"f {t[0]+1+i}//{t[0]+1+i} {t[1]+1+i}//{t[1]+1+i} {t[2]+1+i}//{t[2]+1+i}" for t, m in zip(tri, mask) if m]
+                [
+                    f"f {t[0]+1+i}//{t[0]+1+i} {t[1]+1+i}//{t[1]+1+i} {t[2]+1+i}//{t[2]+1+i}"
+                    for t, m in zip(poly_tri, mask)
+                    if m
+                ]
             )
-            obj_file.write(obj_str + "\n")
-            i += len(poly)
+            states[n]["faces"].append(obj_str)
+            i += len(points_proj)
+        if export_states:
+            with open(states_path / f"{state['id']}.obj", "w") as f:
+                state_points_str = "\n".join(
+                    [f"v {point[0]} {point[1]} {point[2]}" for point in np.concatenate(state_points)]
+                )
+                f.write(state_points_str + "\n")
+
+    points_str_obj = "\n".join(
+        [f"v {point[0]} {point[1]} {point[2]}" for point in points]
+    )
+    normalized_points = points / np.linalg.norm(points, axis=1)[:, None]
+    normals_str_obj = "\n".join(
+        [f"vn {point[0]} {point[1]} {point[2]}" for point in normalized_points]
+    )
+    obj_file.write(points_str_obj + "\n")
+    obj_file.write(normals_str_obj + "\n")
+    for state in states:
+        obj_file.write(f"g {state['id']} {state['title']}\n")
+        # obj_file.write(f"usemtl {state['id']}\n")
+        for face in state["faces"]:
+            obj_file.write(face + "\n")
 
     profiler.disable()
     print("Number of vertices:", i)
@@ -173,6 +213,6 @@ illum 2"""
     profiler.dump_stats("profiling.prof")
 
 
-generate_world_obj(states)
+generate_world_obj(states, export_states=False)
 
 doc.unlink()
