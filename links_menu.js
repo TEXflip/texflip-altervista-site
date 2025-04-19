@@ -1,4 +1,5 @@
 var PageLinks = [
+	{ title: "Calibration Pattern Generator", link: "calibration-pattern-generator" },
 	{ title: "Function Listener", link: "wave_to_audio" },
 	{ title: "Julia Set", link: "JuliaSet" },
 	{ title: "Snek The Snak", link: "Snek_The_Snak" },
