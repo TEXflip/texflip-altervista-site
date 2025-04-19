@@ -3,14 +3,6 @@ $db_host = "localhost";
 $db_user = "texflip";
 $db_name = "my_texflip";
 
-$db = mysql_connect($db_host, $db_user);
-if ($db == FALSE)
-die ("Errore nella connessione.");
-
-$ris = mysql_select_db($db_name);
-if ($ris == FALSE)
-die ("Errore nella selezione del DB.");
-
 function str_replace_first($from, $to, $content)
 {
     $from = '/'.preg_quote($from, '/').'/';
@@ -18,17 +10,17 @@ function str_replace_first($from, $to, $content)
 }
 
 function getRandom(){
-	$db = mysql_connect("localhost", "my_texflip");
+    $mysqli = new mysqli("localhost", "texflip", "", "my_texflip");
 	$query = "SELECT l.objects,l.phrase,l.meters,p.phrase,p.singular FROM lengths l INNER JOIN phrases p ON l.phrase=p.id ORDER BY RAND() LIMIT 1";
     $query2 = "SELECT name,metersForUnit,nameSingular FROM units order by RAND() LIMIT 1";
-    if ($row = mysql_fetch_array(mysql_query($query)))
+    if ($row = $mysqli->query($query)->fetch_all(MYSQLI_ASSOC)[0])
 	{
-    	$objects = split(";",$row['objects']);
+    	$objects = explode(";",$row['objects']);
         $out = $row['phrase'];
         $notOne = TRUE;
         foreach ($objects as &$v)
         	$out = str_replace_first("?","<label class = \"place\">".$v."</label>",$out);
-        if($row2 = mysql_fetch_array(mysql_query($query2))){
+        if($row2 = $mysqli->query($query2)->fetch_all(MYSQLI_ASSOC)[0]){
         	$val = doubleval($row['meters'])/doubleval($row2['metersForUnit']);
             $absVal = abs($val);
             if($absVal > 100)
