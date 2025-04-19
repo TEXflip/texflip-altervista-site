@@ -10,9 +10,14 @@ let position
 let img_width
 let img_ratio
 let img_height
+let last_sample = 0
 
 const update_tint = () => {
-    tint(Math.floor(Math.random() * 16), 16, 16)
+    let curr_sample = Math.floor(Math.random() * 16)
+    if (curr_sample === last_sample)
+        curr_sample += 2;
+    tint(curr_sample, 16, 16)
+    last_sample = curr_sample
 }
 
 function preload() {
@@ -55,8 +60,10 @@ function draw() {
         update_tint()
     }
 
-    position.x += speed.x * deltaTime;
-    position.y += speed.y * deltaTime;
+    dt = min(deltaTime, 2000 / FPS);
+
+    position.x += speed.x * dt;
+    position.y += speed.y * dt;
 }
 
 function windowResized() {

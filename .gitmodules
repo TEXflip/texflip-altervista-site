@@ -1,0 +1,3 @@
+[submodule "pellad_dvd_tv"]
+	path = pellad_dvd_tv
+	url = https://github.com/yungfox/pellad-dvd.git
