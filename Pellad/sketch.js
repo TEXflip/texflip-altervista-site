@@ -36,23 +36,26 @@ function onHover(e) {
 }
 
 function draw() {
-	let h = getHeightViewBox();
-	if (window.scrollY + 300 > h / 2) {
-		setHeightViewBox(h * 1.5);
-		scroll = parseInt(h * 1.5 - 300);
-		addLength(scroll);
+	win_height = document.documentElement.scrollHeight;
+	window_position_wrt_viewport = window.scrollY + window.innerHeight;
+	if (window_position_wrt_viewport > win_height - 700) {
+		let h = getHeightViewBox();
+		setHeightViewBox(h * 1.1);
+		setLength(h * 1.1);
 	}
 }
 
+
+
 function setHeightViewBox(h) {
-	svg.setAttribute("viewBox", "0 0 1275.6 " + (h));
+	svg.setAttribute("viewBox", "0 0 1275.6 " + h);
 }
 
 function getHeightViewBox() {
 	return svg.getAttribute("viewBox").split(" ")[3];
 }
 
-function addLength(scroll) {
+function setLength(length) {
 	for (let k = 0; k < Paths.length; k++) {
 		let arr = InPaths[k].split(" ");
 		let currCommand = null, nCommand = 0;
@@ -60,7 +63,7 @@ function addLength(scroll) {
 			if (isNaN(arr[i])) { currCommand = arr[i]; nCommand = 0 }
 			else nCommand++;
 			if (parseInt(arr[i]) >= 1000 && currCommand != "H" && (currCommand == "V" || ((currCommand == "S" || currCommand == "C" || currCommand == "M" || currCommand == "L") && nCommand % 2 == 0)))
-				arr[i] = parseFloat(parseFloat(arr[i]) + scroll).toFixed(1);
+				arr[i] = length;
 		}
 		Paths[k].setAttribute("d", arr.join(" "));
 	}
