@@ -3,7 +3,7 @@
   src: local("Fipps-Regular"), url(Fipps-Regular.otf) format("truetype");
 }
 
-:root{
+:root {
   --color-font: #1e1e1e;
 }
 
@@ -21,13 +21,22 @@ body {
   background-color: rgb(100, 100, 255);
   letter-spacing: 0.5pt;
   position: absolute;
-  /* bottom: 0; */
-  /* right: 0; */
-  /* left:0; */
   height: 100%;
   width: 100%;
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+#title {
+  display: none;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  text-align: center;
+  font-size: 1.2em;
+  color: var(--color-font);
+  font-family: "Fipps-Regular";
 }
 
 label {
@@ -43,12 +52,20 @@ label {
   line-height: 0%;
 }
 
-#div-container {
+#main-container {
   pointer-events: none;
+  top: 400px;
+  position: relative;
 }
 
-#canvas-container{
+#menu-container {
+  margin: 20px;
+}
+
+#canvas-container {
+  top: 0px;
   margin-right: calc(100% - 100vw);
+  position: absolute;
 }
 
 /* INPUT RANGE */
@@ -88,7 +105,8 @@ input[type=text]:hover {
 
 ::placeholder {
   color: rgba(30, 30, 30, 0.6);
-  opacity: 1; /* Firefox */
+  opacity: 1;
+  /* Firefox */
 }
 
 .clickable {
@@ -96,7 +114,8 @@ input[type=text]:hover {
   pointer-events: all;
 }
 
-::-moz-selection { /* Code for Firefox */
+::-moz-selection {
+  /* Code for Firefox */
   color: rgba(255, 255, 255, 0.8);
   background: rgba(30, 30, 30, 0.8);
 }

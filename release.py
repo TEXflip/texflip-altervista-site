@@ -58,31 +58,31 @@ class FTPutils:
             elif properties['type'] == 'dir':
                 self.download_dir(f"{directory}/{name}")
 
-def deploy(session):
-    session.mkdir(dir_remote) # create the dir if not exists
-    session.cd(dir_remote) # set the root dir in remote
+def deploy(session: FTPutils, source = "", dest = ""):
+    session.mkdir(dest) # create the dir if not exists
+    session.cd(dest) # set the root dir in remote
 
     session.remove_dir_content("js") # Vue produces different file names each build on the js dir, so delete the content before update
 
-    print(f"UPDATING FILES from {dir_local} to {dir_remote}:")
-    session.copy_remote(dir_local)
+    print(f"UPDATING FILES from {source} to {dest}:")
+    session.copy_remote(source)
     session.close()
     print("DONE!")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser("mini script to deploy on altervista")
+    parser = argparse.ArgumentParser(description="Example: python release.py calibration-pattern-generator")
     parser.add_argument("dir", default="pellad_set_creator", help="directory to deploy (default: pellad_set_creator)")
     parser.add_argument("--build", "-b", dest="build", action="store_true", help="build vue project before deploy (default: false)")
     parser.add_argument("--download", "-d", dest="download", action="store_true", help="download remote directory to local")
     args = parser.parse_args()
 
-    dir_local = args.dir # default dir to deploy
+    source = args.dir # default dir to deploy
     if args.build:
         os.system("npm run build")
-        dir_local = "dist"
+        source = "dist"
     
-    dir_remote = Path(args.dir).name
+    destination = Path(args.dir).name
 
     # read credentials from .env file
     with open(".env", 'r') as file:
@@ -98,6 +98,6 @@ if __name__ == "__main__":
     print("CONNECTED!   ")
     
     if args.download:
-        session.download_dir(args.dir)
+        session.download_dir(source)
     else:
-        deploy(session)
+        deploy(session, source, destination)

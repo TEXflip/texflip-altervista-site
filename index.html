@@ -2,7 +2,7 @@
 
 <head>
 	<title>Phisic Word</title>
-	<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" type="text/css" href="menu/style.css">
 	<!-- <script language="javascript" type="text/javascript" src="Libraries/p5/p5.js"></script> -->
 	<script language="javascript" type="text/javascript" src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.js"></script>
@@ -16,15 +16,18 @@
 	<script language="javascript" type="text/javascript" src="menu/sketch.js"></script>
 </head>
 
-<body id="body">
-	<div id="canvas-container" style="position: absolute; right:0px;"></div>
-	<div id="div-container" style="top: 400px; position: relative; width: 100%;/* pointer-events: none;*/">
-		<div id="menu-container" style="margin: 20px;">
-			<p>Available Sketches:</p>
-			<ul id="link-list">
-			</ul>
-		</div>
-	</div>
-</body>
+<main>
+	<body id="body">
+		<div id="canvas-container"></div>
+		<h2 id="title">The Weird World of Tex</h2>
+			<div id="main-container">
+				<div id="menu-container">
+					<div id="available-sketches">Available Sketches:</div>
+					<ul id="link-list">
+					</ul>
+				</div>
+			</div>
+	</body>
+</main>
 
 </html>
